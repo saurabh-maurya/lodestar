@@ -1,0 +1,704 @@
+/* ==========================================================================
+   Site chrome — header, mobile nav, footer
+   ========================================================================== */
+
+/* --- Floating glass navbar --------------------------------------------
+   A fit-content pill that floats over the page instead of sitting in the
+   flow. Because it is fixed, the first band of every page reserves
+   --nav-block for it (see globals.css) — nothing here can shift layout.
+   ---------------------------------------------------------------------- */
+.header {
+  position: fixed;
+  top: var(--nav-top);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: max-content;
+  max-width: calc(100vw - var(--nav-gutter) * 2);
+}
+
+/* A reading-progress hairline at the true top edge of the viewport — a
+   sibling of `.header` rather than a child of it, since `.header` itself
+   sits under a translateX (see site-header.tsx). `--progress` is written
+   directly by the same scroll listener that sets the pill's glass tier. */
+.header__progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  /* Full width at all times; --progress (0–1) scales it down from the left
+     edge instead of resizing the box, so this is one composited layer per
+     scroll frame rather than a layout recalc. */
+  transform: scaleX(var(--progress, 0));
+  transform-origin: 0 0;
+  z-index: 61;
+  background: linear-gradient(90deg, var(--ls-blue-400), var(--accent));
+  transition: transform 120ms linear;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .header__progress {
+    transition: none;
+  }
+}
+
+.header__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-height: var(--nav-h);
+  padding: var(--nav-pad-y) var(--nav-pad-x);
+  border-radius: var(--radius-pill);
+
+  /* Clay, not glass: an opaque puffy surface, so there is no backdrop-filter
+     tier to manage and nothing needed for browsers without it. */
+  background: var(--clay-surface);
+  border: none;
+  box-shadow: var(--shadow-2030);
+
+  transition: box-shadow var(--duration) var(--ease),
+    transform 240ms var(--ease-out-long);
+}
+
+/* Scrolled tier — the same deepened shadow every clay surface gets on
+   interaction, borrowed here for "the reader has engaged with the page". */
+.header[data-scrolled='true'] .header__inner {
+  box-shadow: var(--glow-2030);
+}
+
+/* Before the reader scrolls, on every route: the pill dissolves into the
+   page — no fill or shadow, just the logo, links and buttons floating over
+   whatever is beneath them — then pops into solid clay the moment scrolling
+   starts (data-scrolled flips first, which is why :not() below stops
+   matching and the scrolled-tier rule above takes over). Safe everywhere
+   now that every hero (home and the shared page-hero.tsx band) is the same
+   light material — dark nav text never has to sit on a dark backdrop. The
+   `scale` overshoots nothing — 0.96 to 1 reads as the control settling into
+   place, not springing. */
+.header:not([data-scrolled='true']) .header__inner {
+  background: transparent;
+  box-shadow: none;
+  transform: scale(0.96);
+}
+@media (prefers-reduced-motion: reduce) {
+  .header:not([data-scrolled='true']) .header__inner {
+    transform: none;
+  }
+}
+
+/* Without backdrop-filter the glass would read as a translucent smudge over
+   the page, so every floating layer still using it falls back to a
+   near-solid surface. The header pill and the mobile menu no longer need
+   this — both are opaque clay now — but the bottom CTA still does. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .floatcta {
+    background-color: rgba(255, 255, 255, 0.96);
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5625rem;
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--fg);
+  flex: none;
+}
+/* Inside the pill the wordmark sits a step down — it is a peer of the links,
+   not a masthead. */
+.header .brand {
+  position: relative;
+  font-size: 1.1875rem;
+  padding-inline: var(--space-2);
+}
+.header .brand svg {
+  width: 1.1875rem;
+  height: 1.1875rem;
+  transition: transform var(--duration) var(--ease);
+}
+.header .brand:hover svg {
+  transform: rotate(-12deg) scale(1.08);
+}
+.brand svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  color: var(--accent);
+}
+
+/* The logo file has its own flat white background baked in (it is a JPEG,
+   not a cutout), so it gets its own small chip rather than sitting directly
+   on the pill — that chip reads as intentional on solid clay, and keeps the
+   logo's white box from floating loose over the page while the pill is
+   dissolved (home page, pre-scroll). */
+.brand__logo {
+  display: block;
+  height: 2.5rem;
+  width: auto;
+  border-radius: var(--radius-sm);
+  background: var(--ls-white);
+  padding: 0.25rem 0.5rem;
+}
+.footer .brand {
+  color: var(--ls-white);
+}
+.footer .brand svg {
+  color: var(--ls-blue-400);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  position: relative;
+}
+
+/* --- Travelling nav indicator -----------------------------------------
+   A bar under the whole nav rather than a filled pill or a glow. It marks
+   the current page, follows the pointer while it is over the nav, and
+   settles back when the pointer leaves — so switching pages reads as the
+   marker moving rather than one box blinking out and another blinking in.
+
+   Position comes from site-header.tsx as --ind-x / --ind-w; everything
+   about how it moves is here. The life is in the travel — one marker
+   crossing the nav — so the easing just carries it there and stops.
+   ---------------------------------------------------------------------- */
+.header__nav::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.1875rem;
+  height: 2px;
+  width: var(--ind-w, 0px);
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  transform: translateX(var(--ind-x, 0px));
+  opacity: 0;
+  pointer-events: none;
+}
+.header__nav[data-ind='on']::before {
+  opacity: 1;
+}
+/* Transitions are off until the first measurement has landed, or the bar
+   would fly in from the nav's left edge on every page load. */
+.header__nav[data-ind-ready='true']::before {
+  transition: transform 400ms var(--ease-out-long),
+    width 400ms var(--ease-out-long),
+    opacity var(--duration) var(--ease);
+}
+
+.header__link {
+  position: relative; /* above the indicator */
+  display: inline-block;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--fg-muted);
+  padding: var(--space-2) var(--space-3);
+  white-space: nowrap;
+  /* Inter is a variable font, so the weight interpolates rather than
+     snapping between two cut faces. */
+  transition: color var(--duration) var(--ease),
+    font-weight var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+/* The width reservation. A copy of the label, always at the heaviest weight
+   the link can reach, laid out at zero height and hidden from view and from
+   assistive tech. It fixes the link's width to its bold width, so going bold
+   on hover moves nothing — not the link, not its neighbours, and not the
+   marker that measured it. */
+.header__link::before {
+  content: attr(data-label);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.header__link:hover,
+.header__nav:not(:hover) .header__link[aria-current='page'] {
+  color: var(--fg);
+}
+/* No glow, no filled pill — a link under the pointer just gets heavier and
+   a pixel nearer. The travelling bar underneath (above) is what marks
+   "you are pointing at this" versus "you are on this"; the label itself
+   only ever changes weight and position.
+
+   Qualified with the nav so it outranks the [aria-current] rule below —
+   an attribute selector beats a pseudo-class on specificity, so the plain
+   `.header__link:hover` lost to it and the current page was the one link
+   that would not respond to its own hover. */
+.header__nav .header__link:hover {
+  font-weight: 700;
+  transform: translateY(-1px);
+}
+.header__nav .header__link:active {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+.header__link[aria-current='page'] {
+  font-weight: 700;
+}
+
+/* The label is the thing that lifts; reduced motion drops the travel. */
+@media (prefers-reduced-motion: reduce) {
+  .header__nav .header__link:hover,
+  .header__nav .header__link:active {
+    transform: none;
+  }
+}
+
+/* Without JS the indicator never gets a position, so the current page falls
+   back to a plain bottom border instead. */
+.header__nav[data-ind='off'] .header__link[aria-current='page'] {
+  box-shadow: inset 0 -2px 0 0 var(--accent);
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+/* The gap between navigation and actions. It was a drawn hairline; now that
+   the login control carries its own border, a rule beside it was a second
+   vertical line an eighth of an inch away doing the same job. Space
+   separates them instead — cheaper to look at, and it cannot clash with the
+   button's edge. */
+.header__divider {
+  width: var(--space-2);
+  flex: none;
+}
+
+.header__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  color: var(--fg);
+  transition: background-color var(--duration) var(--ease);
+}
+.header__menu-btn:hover {
+  background: var(--glass-item-hover);
+}
+
+/* Login is a control, not a nav link — it does something rather than going
+   somewhere in the site. It gets a button's shape and edge, but stays
+   outlined rather than filled: the filled pill next to it is the one action
+   the page is asking for, and two solid buttons side by side would leave the
+   eye no idea which is which. */
+.header__login {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--fg);
+  padding: 0.6875rem var(--space-5);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(16, 25, 43, 0.16);
+  /* Transparent, not a white fill. Over the navy hero a translucent white
+     pill lights up into a second bright blob beside the CTA, and the eye
+     cannot tell which of the two is the action. The border alone is enough
+     to say "control". */
+  background: transparent;
+  white-space: nowrap;
+  transition: color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+.header__login:hover {
+  color: var(--accent);
+  background: var(--glass-item-hover);
+  border-color: rgba(42, 112, 180, 0.55);
+  transform: translateY(-1px);
+}
+.header__login:active {
+  transform: scale(0.965);
+  transition-duration: 90ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__login:hover,
+  .header__login:active {
+    transform: none;
+  }
+}
+
+/* --- Mobile navigation -------------------------------------------------
+   A second clay surface hung off the pill rather than a bar pushed into
+   the flow, so opening it moves nothing on the page behind it. Matches the
+   pill itself now — opaque clay, not glass.
+   ---------------------------------------------------------------------- */
+.mobile-nav {
+  position: absolute;
+  top: calc(100% + var(--space-3));
+  left: 0;
+  right: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+
+  background: var(--clay-surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--glow-2030);
+
+  /* Kept in the tree so it can animate; hidden from pointer and a11y trees
+     via `visibility` until it is actually open. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.5rem) scale(0.985);
+  transform-origin: top center;
+  transition: opacity var(--duration) var(--ease),
+    transform var(--duration) var(--ease), visibility var(--duration);
+}
+.mobile-nav[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+.mobile-nav__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.mobile-nav__list a {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--fg-muted);
+  transition: color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease);
+}
+.mobile-nav__list a:hover {
+  color: var(--fg);
+  background: var(--glass-item-hover);
+}
+.mobile-nav__list a[aria-current='page'] {
+  color: var(--fg);
+  font-weight: 600;
+  background: var(--glass-item-active);
+}
+.mobile-nav__actions {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(16, 25, 43, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* --- Navbar responsive tiers ------------------------------------------
+   Desktop keeps every link. The tablet tier tightens the pill's internal
+   spacing before anything is dropped. Below that the links fold into the
+   disclosure, and the CTA holds its place for as long as it fits.
+
+   The collapse point is measured, not guessed: with eight links plus Login
+   and the filled CTA, the pill needs ~1300px to lay out in one line even at
+   its tightened spacing. Below that and down to 1080px it was overflowing
+   past the right edge of the viewport — the CTA button was there in the DOM
+   but partly or fully off-screen, not a smaller layout, an actively broken
+   one. 1320px gives that a little headroom above the measured threshold. If
+   another nav item is ever added, remeasure rather than assume this still
+   clears it. */
+@media (max-width: 1240px) {
+  .header__inner {
+    gap: var(--space-4);
+    --nav-pad-x: 1.125rem;
+  }
+  .header__link {
+    padding-inline: 0.625rem;
+  }
+  /* The login control keeps more of its padding than a bare link would: it
+     is a bordered pill now, and a pill squeezed onto its own label reads as
+     a mistake rather than as a tighter layout. */
+  .header__login {
+    padding-inline: var(--space-4);
+  }
+  .header .brand {
+    font-size: 1.0625rem;
+    padding-inline: var(--space-1);
+  }
+}
+
+@media (max-width: 1320px) {
+  .header__nav,
+  .header__divider,
+  .header__actions .header__login {
+    display: none;
+  }
+  .header__menu-btn {
+    display: inline-flex;
+  }
+  .header__inner {
+    gap: var(--space-8);
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1321px) {
+  .mobile-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  /* The pill spans the gutters so the disclosure it anchors has room to be
+     read; the shape and the float are unchanged. */
+  .header {
+    left: var(--nav-gutter);
+    right: var(--nav-gutter);
+    width: auto;
+    max-width: none;
+    transform: none;
+  }
+  .header__inner {
+    gap: var(--space-3);
+    --nav-pad-x: 0.875rem;
+  }
+  /* The CTA gives up padding before it gives up its place in the pill. */
+  .header__actions .btn {
+    padding-inline: var(--space-4);
+  }
+  /* Matches --nav-h's own drop to 3.75rem here (tokens.css) — otherwise the
+     logo chip alone would force the pill taller than that. */
+  .brand__logo {
+    height: 2rem;
+  }
+}
+
+/* Narrower than this the CTA can no longer sit beside the wordmark without
+   crowding it — and it is already the first item inside the open menu. */
+@media (max-width: 359px) {
+  .header__actions .btn {
+    display: none;
+  }
+}
+
+/* --- Footer ------------------------------------------------------------ */
+.footer {
+  background: var(--bg-brand);
+  color: var(--fg-on-brand);
+  padding-block: clamp(var(--space-16), 7vw, var(--space-24)) var(--space-10);
+}
+
+.footer__top {
+  display: grid;
+  /* The last column holds a card with a pill button in it, so it is sized
+     from that button outwards: the three link columns only need to fit
+     "Sample Report", and the CTA needs its label plus its padding without
+     the button having to shrink. */
+  grid-template-columns: 1.3fr repeat(3, 0.95fr) 1.5fr;
+  gap: clamp(var(--space-6), 3vw, var(--space-10));
+  align-items: start;
+}
+
+.footer__about {
+  color: rgba(255, 255, 255, 0.72);
+  line-height: var(--leading-relaxed);
+  margin-top: var(--space-5);
+  max-width: 24ch;
+}
+
+.footer__contact {
+  margin-top: var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 700;
+  font-size: var(--text-base);
+}
+.footer__contact a:hover {
+  color: var(--ls-blue-400);
+}
+.footer__sep {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footer__col-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ls-white);
+}
+.footer__col ul {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.footer__col a {
+  color: rgba(255, 255, 255, 0.78);
+  transition: color var(--duration) var(--ease);
+}
+.footer__col a:hover {
+  color: var(--ls-white);
+}
+
+/* The floating CTA card that sits in the footer's last column. */
+.footer__cta {
+  background: var(--surface-on-brand);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+.footer__cta h2 {
+  font-size: var(--text-lg);
+  line-height: 1.25;
+}
+.footer__cta p {
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.footer__bottom {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--border-on-brand);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.66);
+}
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.footer__legal a:hover {
+  color: var(--ls-white);
+}
+
+@media (max-width: 1080px) {
+  .footer__top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .footer__cta {
+    grid-column: 1 / -1;
+  }
+  .footer__about {
+    max-width: 42ch;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer__top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .footer__bottom {
+    justify-content: flex-start;
+  }
+}
+
+/* ==========================================================================
+   Floating bottom CTA
+   The redesign plan's glass pill: surfaces the hero's primary action once the
+   hero has scrolled away, without a full sticky bar eating the viewport.
+   It wears the same material as the navbar — and specifically the navbar's
+   strong tier, because it only ever appears on a scrolled page, which is
+   exactly when the navbar is wearing that tier too. The two pills are on
+   screen together, so they have to be the same pane of glass.
+   ========================================================================== */
+.floatcta {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-6);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  background-color: var(--glass-bg-strong);
+  background-image: var(--glass-sheen);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-strong);
+  color: var(--fg);
+
+  /* Hidden state — translate rather than display so it can animate in. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, calc(100% + var(--space-6)));
+  transition: opacity var(--duration) var(--ease),
+    transform var(--duration) var(--ease), visibility var(--duration);
+}
+.floatcta[data-visible='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.floatcta__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  line-height: 1.3;
+}
+.floatcta__copy strong {
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+.floatcta__copy span {
+  font-size: var(--text-sm);
+  color: var(--glass-fg-muted);
+}
+
+.floatcta__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  color: var(--glass-fg-muted);
+  transition: color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease);
+}
+.floatcta__close:hover {
+  color: var(--fg);
+  background: var(--glass-item-hover);
+}
+
+@media (max-width: 560px) {
+  .floatcta {
+    left: var(--space-4);
+    right: var(--space-4);
+    transform: translateY(calc(100% + var(--space-6)));
+    padding-left: var(--space-5);
+    gap: var(--space-3);
+  }
+  .floatcta[data-visible='true'] {
+    transform: translateY(0);
+  }
+  /* The supporting line is the first thing to go on a narrow screen. */
+  .floatcta__copy span {
+    display: none;
+  }
+  .floatcta .btn {
+    margin-left: auto;
+  }
+}

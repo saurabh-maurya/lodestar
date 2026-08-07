@@ -1,0 +1,346 @@
+/* ==========================================================================
+   Lodestar design tokens
+   Palette, type scale, spacing and radii extracted from the Figma frames
+   "Lodestar.guru — Website Revamp" (8 desktop screens, 1440px).
+
+   Layer 1 — primitives (raw values, named by hue/step)
+   Layer 2 — semantic tokens (named by role; these are what components use)
+
+   Light only. The semantic layer is the seam a dark theme would plug into:
+   override the Layer 2 tokens and nothing else would need to change.
+   ========================================================================== */
+
+:root {
+  /* ---------- Layer 1 · primitives ---------------------------------- */
+
+  /* Navy — the brand's anchor. Measured from the dark bands and footer. */
+  --ls-navy-950: #0b1626;
+  --ls-navy-900: #10192b; /* headings on light surfaces */
+  --ls-navy-800: #12305e; /* primary dark surface, footer, dark cards */
+  --ls-navy-700: #1b3f70; /* raised surface inside dark sections */
+  --ls-navy-600: #22497c;
+  --ls-navy-500: #284671;
+
+  /* Blue — action and emphasis. */
+  --ls-blue-700: #2a63a8; /* hero gradient terminus */
+  --ls-blue-600: #2e7bc4; /* the literal Figma accent — see --ls-blue-650 */
+  /* The Figma accent misses WCAG AA in the two roles it is actually used for:
+     white text on the filled button (4.42:1) and accent link/eyebrow text on
+     the light surfaces (4.06–4.12:1). This 3% darker step clears AA in every
+     role (5.15 on white, 4.80 on #F4F7FB, 4.73 on #EFF6FC) and is not
+     perceptibly different side by side. Point --accent back at --ls-blue-600
+     to restore the exact design value.
+
+     Superseded as the live --accent value by --ls-blue-700, one step darker
+     still — a deliberate move away from Figma fidelity now, not just an AA
+     fix. Left defined here as the AA-safe midpoint, in case the brand ever
+     wants to sit between the two. */
+  --ls-blue-650: #2a70b4;
+  --ls-blue-500: #4b93d2;
+  --ls-blue-400: #6fb3e4;
+  --ls-blue-200: #bedcf3; /* soft brand band, phase cards */
+  --ls-blue-100: #d3e6f7;
+  --ls-blue-50: #eff6fc; /* tinted section background */
+
+  /* Neutrals */
+  --ls-white: #ffffff;
+  --ls-gray-50: #f4f7fb; /* subtle surface, most cards */
+  --ls-gray-200: #dee5ee; /* hairline borders */
+  --ls-gray-400: #a5a9af;
+  --ls-gray-600: #55637a; /* muted body copy */
+  --ls-gray-700: #4c5360;
+
+  /* Both gradients are the exact values declared on the Figma layers. */
+  --ls-gradient-hero: linear-gradient(98.53deg, #0e2547 0%, #2a63a8 86.96%);
+  /* Media placeholders in the Figma file are gradient blocks with a caption. */
+  --ls-gradient-media: linear-gradient(126.87deg, #1d4e8c 0%, #6fb3e4 71.43%);
+
+  /* ---------- Layer 1 · type ---------------------------------------- */
+  /* Self-hosted Inter v4 (see @font-face in globals.css). It must be the
+     rsms build, not the Google Fonts one: only rsms ships the `opsz` axis,
+     and that axis is what renders large headings with Inter's Display
+     letterforms — which is what the Figma frames show. */
+  --font-sans: "InterVariable", "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --text-overline: 0.71875rem; /* 11.5px — section eyebrows */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.84375rem; /* 13.5px */
+  --text-base: 0.90625rem; /* 14.5px — body default in the design */
+  --text-md: 1.03125rem; /* 16.5px — section lead paragraphs */
+  --text-lg: 1.125rem; /* 18px — feature titles */
+  --text-xl: 1.3125rem; /* 21px — card titles */
+  --text-2xl: 2rem; /* 32px */
+  --text-3xl: 2.625rem; /* 42px — section headings */
+  --text-4xl: 3rem; /* 48px — page headings */
+  --text-5xl: 3.75rem; /* 60px — hero display */
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.25;
+  --leading-normal: 1.4;
+  --leading-relaxed: 1.7;
+
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.015em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-overline: 0.06em;
+
+  /* ---------- Layer 1 · space, radii, shadow ------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem; /* 24px — the grid gap throughout the design */
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+
+  --radius-sm: 0.625rem; /* 10px */
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 1.125rem; /* 18px */
+  --radius-xl: 1.5rem; /* 24px — cards */
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(16, 25, 43, 0.06);
+  --shadow-md: 0 4px 16px rgba(16, 25, 43, 0.08);
+  --shadow-lg: 0 18px 48px rgba(16, 25, 43, 0.12);
+
+  --container: 1240px; /* content width; 100px gutters at the 1440 frame */
+
+  /* ---------- Layer 1 · floating navbar ----------------------------- */
+  /* The header is a fit-content pill that floats over the page rather than
+     sitting in the flow. --nav-block is the vertical space it occupies, and
+     is what the first band of every page reserves for it. */
+  --nav-top: 1.5rem; /* 24px inset from the viewport top */
+  --nav-h: 4.25rem; /* 68px pill height */
+  --nav-pad-x: 1.375rem; /* 22px */
+  --nav-pad-y: 0.6875rem; /* 11px */
+  --nav-gutter: var(--space-4); /* minimum breathing room at the viewport edge */
+  --nav-block: calc(var(--nav-top) + var(--nav-h));
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* For travel long enough that the default ease-out reads as linear: a
+     harder front-load and a long settle. Nothing here overshoots — the
+     objects that use it (the nav marker, the pinned note) are meant to read
+     as arriving and stopping, not springing. */
+  --ease-out-long: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration: 200ms;
+
+  /* ---------- Layer 1 · glass --------------------------------------- */
+  /* One material, shared by every floating layer: the navbar pill at the top
+     of the viewport, the mobile menu it opens, and the persistent CTA pill at
+     the bottom. They read as the same pane of glass at opposite ends of the
+     screen, so the tokens live in one place.
+
+     Two tiers. The resting tier is what the navbar wears over the top of an
+     untouched page. The strong tier is what it moves to on scroll, and what
+     the menu and the bottom CTA always use — those two only ever float over
+     arbitrary page content and have to hold their own legibility. Only paint
+     properties differ between tiers, so switching costs no layout.
+
+     62% is the floor for the resting tier: the pill's most demanding backdrop
+     is the navy hero, and link text over glass that thin measures 4.8:1
+     against it. Anything more transparent drops under WCAG AA.
+
+     Definition comes from a light hairline and an inset top highlight rather
+     than a drawn border — soft edges, no hard outline. */
+  /* Thin enough that the page reads through the pane — the hero's gradient,
+     a dark band, a photograph. At 62% the pill was an opaque slab wearing a
+     glass costume; at 42% it is actually glass.
+
+     The blur goes up as the opacity comes down, and that is not decoration:
+     the white veil is what was separating text from backdrop, so with less
+     of it the blur has to do that job instead. A heavier blur turns whatever
+     is behind into a smooth field, which is what keeps a 600-weight label
+     legible over a hero, a photo edge or a band boundary alike. */
+  --glass-bg: rgba(255, 255, 255, 0.42);
+  --glass-bg-strong: rgba(255, 255, 255, 0.58);
+  --glass-blur: saturate(180%) blur(24px);
+  --glass-blur-strong: saturate(200%) blur(36px);
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-border-strong: rgba(255, 255, 255, 0.75);
+  --glass-highlight: rgba(255, 255, 255, 0.7);
+
+  /* The reflection: a soft light source above the pane, catching its top edge
+     and falling away by the midpoint. A background layer rather than an
+     overlay, so it can never wash over the content sitting on the glass. */
+  --glass-sheen: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.08) 46%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  /* Leading inset picks out the lit top edge — the counterpart to the sheen. */
+  --glass-shadow: inset 0 1px 0 var(--glass-highlight),
+    0 0 0 1px rgba(16, 25, 43, 0.03),
+    0 10px 28px -16px rgba(16, 25, 43, 0.22);
+  --glass-shadow-strong: inset 0 1px 0 var(--glass-highlight),
+    0 0 0 1px rgba(16, 25, 43, 0.05),
+    0 2px 6px -3px rgba(16, 25, 43, 0.1),
+    0 20px 44px -20px rgba(16, 25, 43, 0.34);
+
+  /* Brand bloom around the floating pill itself. A neutral drop shadow makes
+     glass look like it is lying on the page; a coloured one makes it look
+     lit, as though the brand blue behind it is bleeding through the pane.
+     Two spreads — a tight one for the edge and a wide soft one for the
+     atmosphere — plus a blue inner rim so the border reads as tinted glass
+     rather than as a stroke drawn around it. */
+  /* Rim light, not a halo. A wide soft bloom around a pill this large just
+     reads as a blurry smudge on the page — the blue has to sit ON the edge
+     to look like light catching glass. So: a tinted inner rim doing most of
+     the work, and one short throw underneath for lift. */
+  --glass-glow: inset 0 0 0 1px rgba(120, 180, 235, 0.34),
+    0 2px 10px -6px rgba(42, 112, 180, 0.35);
+  --glass-glow-strong: inset 0 0 0 1px rgba(120, 180, 235, 0.5),
+    0 4px 14px -8px rgba(42, 112, 180, 0.45);
+
+  /* The pane's own edge, in deep brand blue rather than white.
+     On glass this thin the fill cannot draw its own outline, and a white rim
+     only shows up over something dark — over the white pages that are most
+     of this site it vanished, leaving the pill with no shape at all. A dark
+     edge is legible against every backdrop the pill floats over.
+
+     It works with the lit inner rim in --glass-glow, not against it: dark
+     line outside, light line just inside, which is how the edge of real
+     glass actually reads — the far face catching light behind the near one. */
+  --glass-border-brand: rgba(23, 62, 107, 0.42);
+  --glass-border-brand-strong: rgba(23, 62, 107, 0.58);
+
+  /* Hover/active wash for controls sitting on the glass.
+     Brand blue rather than neutral grey: on a pane of glass a grey wash just
+     reads as the surface getting dirty, while a tint of the accent reads as
+     the control lighting up. Kept low so the link on top of it stays the
+     highest-contrast thing in the pill. */
+  --glass-item-hover: rgba(42, 112, 180, 0.1);
+  --glass-item-active: rgba(42, 112, 180, 0.16);
+
+  /* The lit edge of the travelling nav marker. Three layers make it glow
+     rather than just sit there: a saturated rim, an outer bloom that spills
+     onto the glass around it, and an inner top highlight so the pill still
+     reads as part of the same material. */
+  --glass-item-glow: 0 0 0 1px rgba(42, 112, 180, 0.34),
+    0 0 12px -1px rgba(42, 112, 180, 0.45),
+    0 0 26px -6px rgba(42, 112, 180, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  /* Under the pointer it brightens — the marker is following the cursor, so
+     it should look live rather than parked. */
+  --glass-item-glow-strong: 0 0 0 1px rgba(42, 112, 180, 0.48),
+    0 0 14px 0 rgba(42, 112, 180, 0.6),
+    0 0 32px -4px rgba(42, 112, 180, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  /* Secondary text on the glass. --fg-muted is tuned for opaque light
+     surfaces; over the navy hero or a dark band the glass backdrop is much
+     darker than white and that grey drops to 3.7:1.
+
+     This is deliberately much darker than a "muted" grey would normally be.
+     The glass is translucent, so whatever is behind it — a navy hero, a
+     photograph, a dark band — comes through and eats the contrast of
+     anything set on it. A step back in weight, not in darkness, is what
+     makes these read as secondary; the colour has to hold up against the
+     worst backdrop the pill can float over, not the average one. */
+  --glass-fg-muted: #16233a;
+
+  /* ---------- Layer 1 · 2030 content surface (clay) ------------------ */
+  /* Opaque, not glass: a soft two-tone fill plus a pair of inset shadows —
+     one light, catching the top-left the way a raised, slightly puffy
+     surface would; one cool and dark at the bottom-right, reading as the
+     material folding away from the light. No blur, no translucency — the
+     backdrop never has to be legible through this, only under it.
+     Padding, radius, the shimmer sweep, the hover lift are all the generic
+     `.card` mechanics already defined elsewhere; this only supplies the
+     fill and the shadow stack. */
+  --clay-surface: linear-gradient(155deg, #ffffff 0%, var(--ls-blue-50) 100%);
+  --clay-hi: inset 2px 2px 3px rgba(255, 255, 255, 0.9);
+  --clay-lo: inset -7px -9px 16px -6px rgba(84, 133, 186, 0.28);
+  --clay-lift: 0 20px 40px -22px rgba(42, 112, 180, 0.38),
+    0 2px 6px rgba(16, 25, 43, 0.06);
+  --shadow-2030: var(--clay-lift), var(--clay-hi), var(--clay-lo);
+  /* Hover: the pillow rises and the fold deepens — lift grows, the dark
+     inset spreads further — rather than a neutral shadow getting bigger. */
+  --clay-lift-hover: 0 28px 56px -22px rgba(42, 112, 180, 0.46),
+    0 2px 6px rgba(16, 25, 43, 0.08);
+  --clay-lo-hover: inset -9px -12px 20px -6px rgba(84, 133, 186, 0.36);
+  --glow-2030: var(--clay-lift-hover), var(--clay-hi), var(--clay-lo-hover);
+
+  /* Mesh-gradient blobs for the light hero's background wash — page
+     atmosphere, not a UI material, so this stays independent of the clay
+     surfaces that float on top of it. Same three steps of blue already in
+     the palette (--ls-blue-200/400/650), just diffused. */
+  --mesh-1: rgba(190, 220, 243, 0.85);
+  --mesh-2: rgba(111, 179, 228, 0.55);
+  --mesh-3: rgba(42, 112, 180, 0.24);
+
+  /* ---------- Layer 2 · semantic ------------------------------------ */
+  --bg: var(--ls-white);
+  --bg-subtle: var(--ls-gray-50);
+  --bg-tint: var(--ls-blue-50);
+  --bg-brand-soft: var(--ls-blue-200);
+  --bg-brand: var(--ls-navy-800);
+  --bg-hero: var(--ls-gradient-hero);
+
+  --surface: var(--ls-white);
+  --surface-subtle: var(--ls-gray-50);
+  --surface-raised: var(--ls-white);
+  --surface-on-brand: var(--ls-navy-700);
+
+  --fg: var(--ls-navy-900);
+  --fg-muted: var(--ls-gray-600);
+  --fg-on-brand: var(--ls-white);
+  --fg-on-brand-muted: rgba(255, 255, 255, 0.72);
+  --fg-on-soft: var(--ls-navy-800);
+  --fg-on-soft-muted: var(--ls-navy-700);
+
+  /* Darker than the original Figma accent (--ls-blue-650) at your request —
+     more white, more light-blue tint, and a deeper blue carrying the buttons
+     and borders rather than the mid-blue the frames shipped with. Clears AA
+     everywhere the old value did, by a wider margin: 6.1:1 for white text on
+     the filled button (was 5.15), 5.6:1+ as text on both tinted surfaces
+     (was 4.73–4.80). */
+  --accent: var(--ls-blue-700);
+  --accent-hover: #24619b;
+  --accent-fg: var(--ls-white);
+  --accent-soft: var(--ls-blue-200);
+
+  --border: var(--ls-gray-200);
+  /* Was a light blue-grey (#c2cfe0); now a real dark blue, so the surfaces
+     that reach for --border-strong (a hovered plain card, a focused field,
+     the mobile menu, the how-it-works popout) read as blue-bordered rather
+     than just "a slightly firmer hairline". --border stays the quiet
+     default hairline — this is only the emphasis step. */
+  --border-strong: var(--ls-navy-600);
+  --border-on-brand: rgba(255, 255, 255, 0.16);
+
+  --focus-ring: var(--ls-blue-600);
+
+  /* Big watermark words ("SINCE 2011", "PARENT VOICES") sit just above the
+     section background — a deliberately low-contrast decorative layer. */
+  --watermark: rgba(255, 255, 255, 0.42);
+
+  /* Shimmer stroke — the tint of the highlight that sweeps the edge of a
+     surface, and how long one pass takes. Light surfaces need a coloured
+     highlight to register at all; dark ones take white. */
+  --shimmer-tint: rgba(255, 255, 255, 0.9);
+  --shimmer-tint-accent: rgba(42, 112, 180, 0.85);
+  --shimmer-lap: 5s;
+
+  color-scheme: light;
+}
+
+/* The navbar's inset and height come down on small screens. These have to be
+   overridden at the root, not on .header, because --nav-block is composed
+   here and the page bands read it to reserve their top space. */
+@media (max-width: 560px) {
+  :root {
+    --nav-top: 1rem;
+    --nav-h: 3.75rem; /* 60px */
+  }
+}
