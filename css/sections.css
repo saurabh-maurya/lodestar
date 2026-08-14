@@ -1,0 +1,2087 @@
+/* ==========================================================================
+   Section-level layouts specific to individual screens
+   ========================================================================== */
+
+/* --- Home hero --------------------------------------------------------- */
+/* The hero breaks out to a 1320px content width with 60px insets, matching
+   the header rather than the 1240px section container. */
+/* 1320px of content + the container's own 24px gutters (border-box).
+   Doubled class keeps this above the base `.container` rule, which is
+   imported after this file. */
+.container.container--wide {
+  max-width: 1368px;
+}
+
+.hero {
+  display: grid;
+  /* Measured off the frame: text 60→820, gap 120, media 940→1380. */
+  grid-template-columns: 760fr 440fr;
+  gap: clamp(var(--space-8), 8.4vw, 7.5rem); /* 120px at the 1440 frame */
+  align-items: start;
+}
+
+/* The photo's slot in the hero's right-hand column. Sizing is the
+   photo's own concern now (.hero__photo in this file) — this wrapper only
+   centres whatever it's given. */
+.hero__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The text column of a hero that has nothing beside it. Matches the home
+   hero's 760px text column, so the two read as the same band. */
+.page-hero__copy {
+  max-width: 48rem;
+}
+
+.hero__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .hero__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-6);
+  }
+}
+
+/* --- Headline hot word ----------------------------------------------------
+   The one word the headline is actually about ("decision") gets a slow,
+   continuous bob — the one place on the site a playful, always-on movement
+   is deliberate rather than an oversight. Everything else on this page
+   enters once and settles; this keeps moving at rest on purpose, the same
+   exception the header's shimmer and the illustration's breathing already
+   make for "the one thing that should keep pulling the eye".
+   ---------------------------------------------------------------------- */
+.hero__hot-word {
+  position: relative;
+  display: inline-block;
+  animation: hero-hot-word-bob 2.6s ease-in-out 2.5s infinite;
+}
+@keyframes hero-hot-word-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__hot-word {
+    animation: none;
+  }
+}
+
+/* --- Hero · light ---------------------------------------------------------
+   Shared by `home-hero.tsx` and the generic `page-hero.tsx` every other
+   route opens with — one hero material site-wide. `.section--hero` (the
+   original navy gradient) is no longer referenced by either; it stays
+   defined for now rather than torn out mid-redesign, but nothing renders it.
+
+   White background, a slow-drifting mesh of the same three blues the rest
+   of the palette already uses, diffused instead of filled. The mesh sits
+   behind the content on its own layer so the copy never has to fight a
+   moving backdrop for contrast — one soft field of colour, not a busy one.
+   ---------------------------------------------------------------------- */
+.section--hero-light {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  /* A floor, not a fixed height — real content is always free to run past
+     it, nothing here can clip. On the laptop-and-up viewports this is
+     mainly written for, it gives the hero the full-viewport presence a
+     first impression wants; on a short or narrow one it just falls back to
+     however tall the copy and stats naturally run. */
+  min-height: min(94vh, 60rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.section--hero-light::before {
+  content: '';
+  position: absolute;
+  inset: -20% -10%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(38rem 30rem at 82% 6%, var(--mesh-1), transparent 60%),
+    radial-gradient(30rem 26rem at 12% 86%, var(--mesh-2), transparent 65%),
+    radial-gradient(46rem 40rem at 58% 44%, var(--mesh-3), transparent 70%);
+  filter: blur(60px);
+  animation: mesh-drift 28s var(--ease) infinite alternate;
+}
+/* A quiet dotted grid, confined to a soft ellipse behind the art rather than
+   washed over the whole band — texture for the illustration to sit on, not
+   a pattern competing with the copy on the other side of the section. */
+.section--hero-light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(42, 112, 180, 0.22) 1px, transparent 1.5px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 74% 38%, black 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse 65% 55% at 74% 38%, black 0%, transparent 72%);
+}
+/* A faded course/office photo behind the mesh — see `backgroundImage` on
+   `PageHero`. Sits between the mesh (::before) and the dotted texture
+   (::after): the dots read as texture over the photo rather than the photo
+   sitting on top of and hiding them. Low opacity plus a centre-out fade
+   keeps it a hint, not a competing image — the copy in `.container`
+   (z-index 1) is always the thing actually being read. */
+.page-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.16;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 62% 42%, black 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse 75% 65% at 62% 42%, black 0%, transparent 75%);
+}
+.page-hero__bg-img {
+  object-fit: cover;
+}
+
+.section--hero-light .container {
+  position: relative;
+  z-index: 1;
+}
+@keyframes mesh-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-2%, 2%, 0) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section--hero-light::before {
+    animation: none;
+  }
+}
+
+/* A clay pedestal grounding the illustration on white the way the navy
+   gradient used to — a solid raised disc, not a blurred halo, so it reads
+   as the same tactile material as the cards rather than atmosphere. */
+.section--hero-light .hero__art {
+  position: relative;
+}
+.section--hero-light .hero__art::before {
+  content: '';
+  position: absolute;
+  inset: 6% 10%;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--clay-surface);
+  box-shadow: var(--shadow-2030);
+}
+
+/* Two small cards floating over the art — a stat and a notification, the
+   two kinds the brief asked for — rather than plain text chips. Pinned off
+   the edge (negative inset), overlapping the illustration, so they read as
+   layered on top of the composition rather than boxed alongside it. Both
+   are `aria-hidden`: the numbers they carry are real content already, once
+   in the stat row below the hero and once in `.hero__trust` beside the CTA.
+
+   Split into an outer element (position + one-time fade-in) and an inner
+   `.hero__float-card` (continuous idle bob) so the two animations land on
+   different elements — stacked on one element, a later `transform`
+   animation would simply overwrite the earlier one's value every frame
+   instead of composing with it. */
+.hero__float {
+  position: absolute;
+  opacity: 0;
+  animation: hero-float-in 560ms var(--ease-out-long) forwards;
+}
+.hero__float--a {
+  top: 6%;
+  left: -9%;
+  animation-delay: 1.9s;
+}
+.hero__float--b {
+  bottom: 12%;
+  right: -10%;
+  animation-delay: 2.2s;
+}
+@keyframes hero-float-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.hero__float-card {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1.0625rem;
+  border-radius: 20px;
+  background: var(--clay-surface);
+  box-shadow: var(--shadow-2030);
+  white-space: nowrap;
+  transition: box-shadow 260ms var(--ease);
+  /* The gentle up/down drift the brief asks for. Small amplitude, eased
+     both ways, no overshoot — the same "ambient, not attention-seeking"
+     register as the mesh drift behind it, not the pop-token reserved for
+     confirmations. Durations differ (5.4s / 6.6s) and one starts later, so
+     the two cards never move in lockstep. */
+  animation: hero-float-idle 5.4s ease-in-out infinite;
+}
+.hero__float:hover .hero__float-card {
+  box-shadow: var(--glow-2030);
+}
+.hero__float--b .hero__float-card {
+  animation-duration: 6.6s;
+  animation-delay: 0.6s;
+}
+@keyframes hero-float-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+.hero__float-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hero__float-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+/* The one card reporting a result, not a headcount, borrows the site's
+   existing success colour rather than the brand blue every other accent
+   here already uses — the same way a real notification distinguishes "a
+   number" from "a good outcome". */
+.hero__float-icon--check {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.hero__float-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.hero__float-copy strong {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.hero__float-copy span {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+}
+
+/* The offset that hangs them past the art's edge is exactly what breaks on
+   a column this narrow — stacked under the copy, at full width, there is no
+   "edge of the composition" left to pin them to. */
+@media (max-width: 720px) {
+  .hero__float {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__float {
+    animation: none;
+    opacity: 1;
+  }
+  .hero__float-card {
+    animation: none;
+  }
+}
+
+/* --- Hero trust row -------------------------------------------------------
+   Stars plus a headline number, directly under the primary CTA — proof
+   sitting exactly where the hesitation would be, rather than three sections
+   later. Distinct from `.hero__stats` below: that row is the full spread of
+   numbers, this is the one that matters in the first three seconds. */
+.hero__trust {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+.hero__trust .stars {
+  flex: none;
+}
+.hero__trust span {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--fg-muted);
+}
+
+/* --- Hero illustration (components/ui.tsx HeroIllustration) -------------
+   The Storyset scene in a hero's aside slot — same footprint the photo
+   `Media` component fills, so a page can carry either without the layout
+   changing shape. A gentle float, the one continuously-moving element the
+   hero's motion language allows itself.
+   ---------------------------------------------------------------------- */
+.hero-illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  animation: hero-illustration-float 7s ease-in-out infinite;
+}
+.hero-illustration img {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+}
+@keyframes hero-illustration-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-illustration {
+    animation: none;
+  }
+}
+
+/* --- Hero photo (components/home-hero.tsx) ------------------------------
+   A real photograph in the hero's art slot — a Class 9–12 student in a
+   career-guidance conversation, replacing the illustration this slot used
+   to carry. Framed as a card (rounded, shadowed) rather than bled full-width,
+   so it reads as a photograph sitting on the clay pedestal rather than a
+   background fill. The same gentle float the illustration had, kept on the
+   wrapper so the rest of the hero's motion language (mesh drift, float
+   cards) doesn't lose its one "breathing" element.
+   ---------------------------------------------------------------------- */
+.hero__photo {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-2030);
+  animation: hero-photo-float 7s ease-in-out infinite;
+}
+.hero__photo img {
+  object-fit: cover;
+}
+@keyframes hero-photo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__photo {
+    animation: none;
+  }
+}
+
+/* --- Hero note (the slant) ---------------------------------------------
+   A mini paper note pinned across the seam between the hero and the band
+   below it. The wrapper has no height, so the note hangs off the boundary
+   instead of pushing either section around — half in the dark, half in the
+   light, which is what sells it as pinned to the page rather than laid out
+   on it.
+   ---------------------------------------------------------------------- */
+.slant {
+  position: relative;
+  z-index: 3; /* above both neighbouring bands */
+  height: 0;
+  /* The wrapper spans the page; only the note itself should take a pointer. */
+  pointer-events: none;
+}
+
+/* The note hangs half into each neighbour, so both of them have to widen
+   their padding at the seam — otherwise it lands on the hero's stat row.
+   Keyed off the note's own presence, so a page without one is untouched. */
+.section:has(+ .slant) {
+  padding-bottom: clamp(7.5rem, 10vw, 9rem);
+}
+.slant + .section {
+  padding-top: clamp(7.5rem, 10vw, 9rem);
+}
+
+.slant__rail {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.slant__note {
+  pointer-events: auto;
+  position: relative;
+  width: 15.5rem; /* 248px — a note, not a card */
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  /* Paper, not surface: a warm off-white the palette has nowhere else, so it
+     reads as an object dropped onto the page rather than part of it. */
+  background: #fffdf5;
+  color: var(--fg);
+  border-radius: 3px;
+  /* Two shadows: a tight one for the contact edge, a long soft one for the
+     lift. A single blur reads as a sticker. */
+  box-shadow: 0 1px 2px rgba(16, 25, 43, 0.16),
+    0 18px 34px -18px rgba(16, 25, 43, 0.45);
+
+  transform: translateY(-50%) rotate(-3.5deg);
+  transform-origin: 50% 50%;
+  transition: transform 380ms var(--ease-out-long),
+    box-shadow 380ms var(--ease);
+}
+/* Straightens and lifts under the pointer — the one thing a paper note on a
+   desk actually does. */
+.slant__note:hover,
+.slant__note:focus-within {
+  transform: translateY(-50%) rotate(-1deg) scale(1.02);
+  box-shadow: 0 2px 4px rgba(16, 25, 43, 0.14),
+    0 26px 44px -20px rgba(16, 25, 43, 0.5);
+}
+
+/* The strip of tape holding it on. Sits half off the top edge. */
+.slant__tape {
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  width: 4.5rem;
+  height: 1.125rem;
+  transform: translateX(-50%) rotate(-2.5deg);
+  background: rgba(255, 255, 255, 0.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 2px rgba(16, 25, 43, 0.12);
+}
+
+.slant__label {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.slant__lines {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fg);
+}
+/* A ruled sheet: each fact sits on its own faint line. */
+.slant__lines li {
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(16, 25, 43, 0.08);
+}
+.slant__lines li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.slant__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent);
+  transition: gap var(--duration) var(--ease);
+}
+.slant__action:hover {
+  gap: 0.625rem;
+}
+.slant__action svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* Narrow screens have no column to hang off, so the note centres — and it
+   tightens, because the padding either side of the seam is what it has to
+   fit inside and that padding is smaller here. */
+@media (max-width: 900px) {
+  .slant__rail {
+    justify-content: center;
+  }
+  .slant__note {
+    width: 13.5rem;
+    padding: var(--space-4);
+    gap: var(--space-2);
+    transform: translateY(-50%) rotate(-2.5deg);
+  }
+  .slant__note:hover,
+  .slant__note:focus-within {
+    transform: translateY(-50%) rotate(-1deg) scale(1.02);
+  }
+  .slant__lines {
+    font-size: var(--text-sm);
+    gap: var(--space-1);
+  }
+  .slant__lines li {
+    padding-bottom: var(--space-1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slant__note,
+  .slant__note:hover,
+  .slant__note:focus-within {
+    transform: translateY(-50%) rotate(-3.5deg);
+  }
+  @media (max-width: 900px) {
+    .slant__note,
+    .slant__note:hover,
+    .slant__note:focus-within {
+      transform: translateY(-50%) rotate(-2.5deg);
+    }
+  }
+}
+
+/* --- CTA panel (free-assessment) ----------------------------------------
+   The frame's full-bleed navy band, replaced with a white section and this
+   clay panel instead — the one CTA on the page that gets the deepened,
+   hover-tier shadow permanently rather than only on interaction, since it
+   is the primary conversion moment. Same clay tokens as `.card--clay`, just
+   without the card anatomy: this is a bespoke two-column split, not a card.
+   ---------------------------------------------------------------------- */
+.cta-panel {
+  position: relative;
+  border-radius: var(--radius-xl);
+  padding: clamp(var(--space-8), 4vw, var(--space-12));
+  background: var(--clay-surface);
+  box-shadow: var(--glow-2030);
+}
+@media (max-width: 560px) {
+  .cta-panel {
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* --- Watermark band ---------------------------------------------------- */
+.watermark-band {
+  position: relative;
+  overflow: hidden;
+}
+.watermark-band .watermark {
+  margin-top: var(--space-10);
+}
+.watermark-band--right .watermark {
+  text-align: right;
+}
+
+/* --- Contact / office panel -------------------------------------------- */
+.office-card {
+  background: var(--surface-subtle);
+  color: var(--fg);
+  border-radius: var(--radius-xl);
+  padding: clamp(var(--space-6), 3vw, var(--space-8));
+}
+/* Contact rows. The label column used to repeat "Phone / Alternate / Email /
+   Hours" down every office; an icon says the same in a fraction of the width,
+   and the value it labels gets the emphasis instead. */
+.office-rows {
+  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+}
+.office-row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+.office-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.office-row dt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  /* Nudged onto the text's optical centre, since the row aligns on baseline. */
+  transform: translateY(0.2em);
+}
+.office-row dt svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+.office-row dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  letter-spacing: -0.008em;
+}
+.office-row dd a:hover {
+  color: var(--accent);
+}
+/* Distinguishes the second phone number from the first without giving the
+   label a column of its own. */
+.office-row__note {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.office-card__address {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.office-card__address svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex: none;
+  color: var(--accent);
+  transform: translateY(0.1em);
+}
+
+/* A live map, not the caption pill it replaces — rounded to match the rest
+   of the card system, with its own shadow so it reads as a distinct object
+   inside the office card rather than a bleed to the card's own edge. */
+.office-map {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.office-map__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* --- Resources: editorial journal index ----------------------------------
+   A section heading, a category filter beside the search field, an immersive
+   featured post, then a 3-column grid — the same card anatomy as everywhere
+   else on the site (media, title, body, meta) read as a magazine front page
+   rather than the flat list of text rows this index used to be.
+   ---------------------------------------------------------------------- */
+.journal__heading {
+  max-width: 44rem;
+}
+
+.journal__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+.journal__categories {
+  flex: 1 1 auto;
+}
+
+/* --- Featured post -------------------------------------------------------
+   One big editorial image, the copy laid directly over its lower half. Same
+   scrim technique `.media--photo` and `.card__media--photo` already use for
+   a photo caption to stay legible — deepened here since a whole paragraph,
+   not one chip, has to read over the image. */
+.feature-post {
+  margin-top: clamp(var(--space-8), 4vw, var(--space-10));
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-2030);
+}
+.feature-post__media {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  background: var(--ls-navy-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+.feature-post__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms var(--ease-out-long);
+}
+.feature-post:hover .feature-post__media img {
+  transform: scale(1.03);
+}
+.feature-post__thumb-icon svg {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.feature-post__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
+  background: linear-gradient(
+    180deg,
+    rgba(11, 22, 38, 0) 32%,
+    rgba(11, 22, 38, 0.68) 72%,
+    rgba(11, 22, 38, 0.88) 100%
+  );
+}
+.feature-post__category {
+  align-self: flex-start;
+}
+.feature-post__title {
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, var(--text-3xl));
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.15;
+  color: var(--ls-white);
+  max-width: 34ch;
+}
+.feature-post__excerpt {
+  max-width: 58ch;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: var(--leading-relaxed);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.feature-post__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.feature-post__byline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 0;
+}
+.feature-post__byline strong {
+  color: var(--ls-white);
+}
+.feature-post__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  margin-left: auto;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--ls-white);
+  transition: background-color var(--dur-fast, 150ms) var(--ease),
+    transform var(--dur-base, 220ms) var(--ease);
+}
+.feature-post:hover .feature-post__arrow {
+  background: var(--accent);
+  transform: translateX(3px);
+}
+.feature-post__arrow svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* --- Post grid -------------------------------------------------------- */
+.journal__grid {
+  margin-top: clamp(var(--space-8), 4vw, var(--space-10));
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+.post-card {
+  display: flex;
+  flex-direction: column;
+  color: var(--fg);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-2030);
+  transition: transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease);
+}
+.post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-2030);
+}
+.post-card__thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--ls-gradient-media);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+.post-card__thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 450ms var(--ease-out-long);
+}
+.post-card:hover .post-card__thumb img {
+  transform: scale(1.04);
+}
+.post-card__thumb-icon svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+.post-card__category {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 1;
+}
+.post-card__hover-arrow {
+  position: absolute;
+  bottom: var(--space-3);
+  right: var(--space-3);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--ls-white);
+  color: var(--ls-navy-800);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--dur-fast, 150ms) var(--ease),
+    transform var(--dur-base, 220ms) var(--ease);
+}
+.post-card__hover-arrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+.post-card:hover .post-card__hover-arrow {
+  opacity: 1;
+  transform: translateY(0);
+}
+.post-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: clamp(var(--space-5), 2.2vw, var(--space-6));
+}
+.post-card__body h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.3;
+}
+.post-card__excerpt {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--fg-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.post-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+.post-card__byline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  font-size: var(--text-sm);
+}
+.post-card__date {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+.post-card__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  flex: none;
+  white-space: nowrap;
+}
+.post-card__time svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
+
+@media (max-width: 900px) {
+  .journal__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  .feature-post__media {
+    aspect-ratio: 4 / 5;
+  }
+  .journal__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feature-post__media img,
+  .post-card__thumb img,
+  .feature-post__arrow,
+  .post-card__hover-arrow {
+    transition-property: opacity, background-color;
+  }
+}
+
+/* The field opens when it is wanted and stays out of the way when it is not.
+   Width is the property that has to move — the point is that the box gets
+   longer, and there is no transform that lengthens a rounded box without
+   stretching the icon and the placeholder inside it. It is one element,
+   moved once per focus, never while scrolling. */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(17rem, 100%);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: width 260ms var(--ease-out-long),
+    border-color var(--dur-fast, 150ms) var(--ease),
+    box-shadow var(--dur-fast, 150ms) var(--ease),
+    background-color var(--dur-fast, 150ms) var(--ease);
+}
+.search:hover {
+  border-color: var(--border-strong);
+}
+/* Open on focus, and stay open while it holds a query — collapsing a field
+   with text still in it would hide the thing being searched for. */
+.search:focus-within,
+.search[data-filled] {
+  width: min(30rem, 100%);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.search__icon {
+  position: absolute;
+  left: var(--space-4);
+  width: 1.0625rem;
+  height: 1.0625rem;
+  color: var(--fg-muted);
+  pointer-events: none;
+  transition: color var(--dur-fast, 150ms) var(--ease);
+}
+.search:focus-within .search__icon {
+  color: var(--accent);
+}
+
+.search__input {
+  width: 100%;
+  padding: 0.75rem var(--space-5) 0.75rem var(--space-10);
+  border: 0;
+  background: transparent;
+  border-radius: inherit;
+  font-size: var(--text-base);
+  color: var(--fg);
+}
+.search__input:focus {
+  outline: none;
+}
+.search__input::placeholder {
+  color: var(--fg-muted);
+}
+/* The browser's own clear affordance would sit beside ours. */
+.search__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search__clear {
+  position: absolute;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-pill);
+  color: var(--fg-muted);
+  transition: color var(--dur-fast, 150ms) var(--ease),
+    background-color var(--dur-fast, 150ms) var(--ease),
+    transform var(--dur-fast, 150ms) var(--ease);
+}
+.search__clear:hover {
+  color: var(--fg);
+  background: rgba(16, 25, 43, 0.06);
+}
+.search__clear:active {
+  transform: scale(0.9);
+}
+
+.journal__count {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+
+.journal__empty {
+  padding: clamp(var(--space-8), 5vw, var(--space-12));
+  border-radius: var(--radius-xl);
+  border: 1px dashed var(--border-strong);
+  background: var(--surface-subtle);
+  text-align: center;
+}
+.journal__empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--ls-navy-800);
+}
+.journal__empty-icon svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+.journal__empty .body {
+  margin-inline: auto;
+  max-width: 42ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search {
+    transition-property: border-color, box-shadow, color;
+  }
+}
+
+/* --- Registration form -------------------------------------------------
+   The one form on the site that shows its labels. Elsewhere a placeholder
+   is enough because the field is asking for something obvious; here a parent
+   is entering two different email addresses for two different purposes, and
+   a placeholder that vanishes the moment you type is not a label.
+   ---------------------------------------------------------------------- */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.select-wrap {
+  position: relative;
+  display: flex;
+}
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  /* Room for the chevron, which sits on top of the control. */
+  padding-right: var(--space-10);
+  cursor: pointer;
+}
+/* Until a choice is made the control is showing its placeholder, so it reads
+   as placeholder text rather than as an answer. */
+.select:has(option[value='']:checked) {
+  color: var(--fg-muted);
+}
+.select-wrap__chevron {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  width: 1.125rem;
+  height: 1.125rem;
+  transform: translateY(-50%);
+  color: var(--fg-muted);
+  pointer-events: none;
+  transition: transform var(--dur-fast, 150ms) var(--ease);
+}
+.select-wrap:hover .select-wrap__chevron {
+  color: var(--fg);
+}
+/* A select whose value is set gets the same tick as a text field, so the
+   two kinds of control report completion the same way. */
+.field[data-valid='true'] .select {
+  padding-right: var(--space-12);
+}
+.field[data-valid='true'] .select-wrap__chevron {
+  right: var(--space-10);
+}
+
+/* ==========================================================================
+   Scroll reveal
+   Generic — used by any <Reveal> (components/reveal.tsx), on /experts and
+   wherever else the pattern is reused.
+   ========================================================================== */
+/* Fades and rises the first
+   time it crosses into view. Driven by <Reveal> (components/reveal.tsx),
+   which toggles data-reveal via IntersectionObserver and defaults every
+   element to 'shown' — so a slow connection or JS failure means no
+   animation, never invisible content. Each instance carries its own
+   --reveal-delay for the stagger. */
+[data-reveal] {
+  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal='hidden'] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+[data-reveal='shown'] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Pricing card -----------------------------------------------------
+   The offer and its proof, in one card. This used to be two blocks — a
+   priced strip, then a separate row of badges and stats underneath it — and
+   the badges read as a footnote after the offer rather than as part of what
+   was making the offer credible. One card, two rows, one hairline between
+   them.
+
+   The glow is the one moment on the page allowed to draw the eye like this:
+   everything above it is information, this is the offer. A slow,
+   low-amplitude pulse around the panel's own edge — not a spotlight thrown
+   onto the page around it — so it reads as premium rather than as an alert
+   demanding attention. */
+.expert-price {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  max-width: 64rem;
+  margin-inline: auto;
+  /* --space-9 does not exist in the scale (it jumps 8 → 10); an earlier
+     version of this reached for it and the whole padding declaration
+     silently dropped to 0 — clamp() with any unresolved var() inside it is
+     invalid at computed-value time, and there is no fallback to fall back
+     to. */
+  padding: clamp(var(--space-7), 3vw, var(--space-10));
+  border-radius: 24px;
+  background: linear-gradient(120deg, #0e2547 0%, #1b3f70 55%, #2a63a8 100%);
+  color: var(--ls-white);
+  isolation: isolate;
+}
+.expert-price::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(120deg, #2a63a8, #6fb3e4, #2a63a8);
+  opacity: 0.55;
+  filter: blur(18px);
+  animation: expert-glow 5s ease-in-out infinite;
+}
+@keyframes expert-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.75; }
+}
+
+.expert-price__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+.expert-price__label {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--ls-blue-400);
+}
+.expert-price__amount {
+  margin-top: var(--space-2);
+  font-size: clamp(2.25rem, 1.4rem + 2.2vw, 3rem);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
+}
+.expert-price__note {
+  margin-top: var(--space-2);
+  color: rgba(255, 255, 255, 0.76);
+  font-size: var(--text-sm);
+}
+.expert-price__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.expert-price .btn--outline {
+  color: var(--fg-on-brand);
+  border-color: rgba(255, 255, 255, 0.45);
+  --roll-fg: var(--ls-blue-400);
+}
+.expert-price .btn--outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+/* The proof, in the same card as the price it backs up — light-on-dark
+   versions of the badge and stat rows, separated by one hairline rather
+   than by the section gap the two used to sit across. */
+.expert-price__trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.expert-price__badges {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+}
+.expert-price__badges li {
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+}
+.expert-price__badges svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--ls-blue-400);
+}
+.expert-price__stats {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: var(--space-8);
+}
+.expert-price__stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.expert-price__stats strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ls-white);
+}
+.expert-price__stats strong svg {
+  width: 1rem;
+  height: 1rem;
+  color: #e0a92c;
+}
+.expert-price__stats span {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+@media (max-width: 720px) {
+  .expert-price__top,
+  .expert-price__trust {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .expert-price::before {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* --- Expert profile card -------------------------------------------------
+   One card per expert on /experts/[category]. Uses the standard
+   CardHeader/CardIcon tile in place of a photo — see the placeholder note on
+   expertProfiles in lib/content/programs.ts — then education, bio, the
+   domains as pills, and the same price/CTA footer every card shares.
+   ---------------------------------------------------------------------- */
+.expert-card__education {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.expert-card__domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* --- How-it-works stepper -------------------------------------------------
+   The rail above the "How it works" cards on /experts. A bare line by
+   default; `.steps__fill` grows across it as the active step advances, and
+   the node it reaches gets a ring + pulse, in step with the card below it
+   lifting. See components/how-it-works-steps.tsx for why the fill remounts
+   (rather than tweens backward) every time the cycle loops to step one.
+   ---------------------------------------------------------------------- */
+.steps__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 1.75rem;
+  margin: 0 0.4375rem var(--space-6);
+}
+.steps__track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--border);
+  transform: translateY(-50%);
+  border-radius: var(--radius-pill);
+}
+.steps__fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--accent);
+  transform: translateY(-50%);
+  border-radius: var(--radius-pill);
+  transition: width 900ms var(--ease-out-long);
+}
+.steps__node {
+  position: relative;
+  z-index: 1;
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  transition: background var(--duration) var(--ease),
+    border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.steps__node.is-passed {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.steps__node.is-active {
+  transform: scale(1.35);
+  animation: steps-pulse 1.8s ease-in-out infinite;
+}
+@keyframes steps-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 24%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+}
+.step-card {
+  transition: transform 500ms var(--ease-out-long), box-shadow 500ms var(--ease-out-long);
+}
+.step-card.is-active {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg), 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .steps__fill,
+  .steps__node,
+  .step-card {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* --- Link cards ---------------------------------------------------------
+   Three destinations, each a whole card that is a link. Same anatomy as the
+   rest of the card system — anchor, title, body, then the action on its own
+   line at the bottom.
+   ---------------------------------------------------------------------- */
+.linkcard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: clamp(var(--space-6), 2.2vw, var(--space-8));
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: linear-gradient(158deg, #ffffff 0%, #f2f8fe 46%, #dceafa 100%);
+  color: var(--fg);
+  height: 100%;
+  transition: transform var(--dur-base, 220ms) var(--ease),
+    box-shadow var(--dur-base, 220ms) var(--ease),
+    border-color var(--dur-base, 220ms) var(--ease);
+}
+.linkcard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(42, 112, 180, 0.38);
+  box-shadow: var(--shadow-lg);
+}
+.linkcard__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--ls-navy-800);
+  transition: transform var(--dur-base, 220ms) var(--ease);
+}
+.linkcard__icon svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+.linkcard:hover .linkcard__icon {
+  transform: scale(1.08) rotate(-3deg);
+}
+.linkcard__title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-snug);
+  text-wrap: balance;
+}
+.linkcard__body {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--fg-muted);
+}
+.linkcard__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent);
+}
+.linkcard__cta svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  transition: transform var(--dur-base, 220ms) var(--ease);
+}
+.linkcard:hover .linkcard__cta svg {
+  transform: translateX(3px);
+}
+
+/* --- Highlighted note ---------------------------------------------------
+   A fact that applies to every program, marked the way someone would mark it
+   on paper: a highlighter stroke pulled across the line.
+
+   Two strokes rather than one, at slightly different angles and radii. A
+   single rounded rectangle reads as a UI chip; two overlapping passes with
+   uneven ends read as something drawn by hand, which is the whole point of
+   the device — it says a person thought this line mattered.
+   ---------------------------------------------------------------------- */
+.brush-note {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+  text-align: center;
+}
+
+.brush {
+  position: relative;
+  display: inline-block;
+  padding: 0.15em 0.75em 0.2em;
+  background: transparent; /* <mark> ships with a yellow default */
+  color: var(--fg);
+  font-size: var(--text-md);
+  font-weight: 800;
+  letter-spacing: -0.008em;
+  isolation: isolate;
+}
+/* The main pass of the marker. Uneven corner radii give the stroke the
+   blunt, slightly ragged ends a chisel tip leaves. */
+.brush::before,
+.brush::after {
+  content: '';
+  position: absolute;
+  inset: 0.05em -0.15em 0.05em -0.35em;
+  z-index: -1;
+  background: var(--accent-soft);
+  border-radius: 62% 38% 58% 42% / 74% 62% 38% 26%;
+  transform: rotate(-0.7deg);
+}
+/* The second pass, offset and lighter — where the marker overlapped itself. */
+.brush::after {
+  inset: 0.3em -0.35em 0.1em -0.1em;
+  background: rgba(42, 112, 180, 0.22);
+  border-radius: 45% 55% 40% 60% / 40% 35% 65% 60%;
+  transform: rotate(0.9deg);
+}
+
+@media (max-width: 560px) {
+  .brush {
+    font-size: var(--text-base);
+  }
+}
+
+/* --- Enrolment layout ---------------------------------------------------
+   One form, two columns: what is being bought on the left, who is buying it
+   on the right. Both inside the same <form>, so the discount code and the
+   hidden program fields submit with everything else.
+   ---------------------------------------------------------------------- */
+.enrol {
+  display: grid;
+  grid-template-columns: 21rem minmax(0, 1fr);
+  gap: clamp(var(--space-6), 3vw, var(--space-8));
+  align-items: start;
+}
+/* The summary follows the parent down the fields. On a short viewport the
+   total and the fields are never on screen together otherwise. */
+.enrol__pay {
+  position: sticky;
+  top: calc(var(--nav-block) + var(--space-4));
+}
+.pay__note {
+  font-size: var(--text-xs);
+  line-height: var(--leading-relaxed);
+  color: var(--fg-muted);
+}
+
+/* Two classes, so this beats .section--tight without an !important. */
+.section.enrol-band {
+  padding-block: var(--space-8) clamp(var(--space-12), 6vw, var(--space-20));
+}
+
+.enrol__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+}
+/* The test-link email runs full width: it is the one field on the form that
+   is easy to misread as a duplicate of the parent's address, and a line of
+   its own is what stops that. */
+.enrol__grid > :last-child {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 620px) {
+  .enrol__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .enrol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .enrol__pay {
+    position: static;
+  }
+}
+
+/* --- Course details layout (app/programs/register) ---------------------
+   The Udemy-style read: curriculum and outcome in a wide reading column,
+   a thumbnail-and-price card that stays in view beside it. One grid for
+   the whole page rather than a stack of equal sections, so the sidebar has
+   something to stick relative to all the way down to the registration form.
+   ---------------------------------------------------------------------- */
+.course {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: clamp(var(--space-8), 4vw, var(--space-10));
+  align-items: start;
+}
+.course__main {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-10), 5vw, var(--space-14));
+  min-width: 0;
+}
+.course__block > .h3 {
+  margin-bottom: var(--space-5);
+}
+.course__sidebar {
+  position: sticky;
+  top: calc(var(--nav-block) + var(--space-4));
+}
+
+.course-card {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-2030);
+}
+.course-card__thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--ls-navy-900);
+}
+.course-card__thumb img {
+  object-fit: cover;
+}
+.course-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+.course-card__price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.course-card__price {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+}
+.course-card__included {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+.course-card__included li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.course-card__included svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--success);
+}
+.course-card__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  line-height: var(--leading-relaxed);
+}
+.course-card__note svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+  flex: none;
+  margin-top: 0.15em;
+}
+
+@media (max-width: 900px) {
+  .course {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .course__sidebar {
+    position: static;
+    /* On the single-column layout the card moves above the reading column —
+       a parent should see the price and what's included before committing to
+       reading the full curriculum, the same order the sidebar gives them on
+       a wide screen. */
+    order: -1;
+  }
+}
+
+/* --- Payment page (app/programs/register/payment) ----------------------- */
+.payment-band .form-card {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+.pay--empty {
+  max-width: 30rem;
+  margin-inline: auto;
+  text-align: center;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--bg-tint);
+}
+
+/* --- Program & payment block ------------------------------------------- */
+.pay {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--bg-tint);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.pay__title {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pay__rows {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+}
+.pay__rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.pay__rows dt {
+  color: var(--fg-muted);
+}
+.pay__rows dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+/* The amount is the fact the page turns on, so it is the largest thing in
+   the form and it sits hard right, where every other deciding value on this
+   site sits. */
+.pay__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(42, 112, 180, 0.24);
+  font-size: var(--text-base);
+  color: var(--fg-muted);
+}
+.pay__total strong {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  color: var(--accent);
+}
+
+/* --- Assessment list (app/programs "What your child actually sits") ----
+   A numbered sequence of rows instead of a fourth card grid in a row of
+   them — this reads as "sit these four, in this order" rather than as four
+   more options to compare against each other.
+   ---------------------------------------------------------------------- */
+.assess-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.assess-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  padding: clamp(var(--space-5), 2.4vw, var(--space-7))
+    clamp(var(--space-6), 2.6vw, var(--space-8));
+  border-radius: var(--radius-xl);
+  background: var(--clay-surface);
+  box-shadow: var(--shadow-2030);
+}
+.assess-row__index {
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
+  color: var(--accent-soft);
+}
+.assess-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent);
+}
+.assess-row__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.assess-row__copy {
+  min-width: 0;
+}
+.assess-row__eyebrow {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.assess-row__title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-top: 0.2em;
+}
+.assess-row__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  text-align: right;
+  white-space: nowrap;
+}
+.assess-row .check-list {
+  grid-column: 1 / -1;
+  margin-top: var(--space-2);
+  padding-top: clamp(var(--space-4), 2vw, var(--space-5));
+  border-top: 1px solid rgba(42, 112, 180, 0.16);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2) var(--space-6);
+}
+@media (max-width: 760px) {
+  .assess-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .assess-row__meta {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    white-space: normal;
+  }
+  .assess-row .check-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- Menu list (app/programs "Before you decide") -----------------------
+   A bordered list of rows rather than a third box grid on the same page —
+   the change of pace the section is meant to be, not another set of cards.
+   ---------------------------------------------------------------------- */
+.menu-list {
+  border-top: 1px solid var(--border);
+}
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(var(--space-4), 2vw, var(--space-5));
+  padding: clamp(var(--space-5), 2.4vw, var(--space-6)) var(--space-2);
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--duration) var(--ease);
+}
+.menu-row:hover,
+.menu-row:focus-visible {
+  background: var(--bg-subtle);
+}
+.menu-row__index {
+  flex: none;
+  width: 2rem;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.menu-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.menu-row__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+.menu-row__title {
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--fg);
+}
+.menu-row__body {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.menu-row__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--accent);
+  flex: none;
+  white-space: nowrap;
+  transition: gap var(--duration) var(--ease);
+}
+.menu-row:hover .menu-row__cta {
+  gap: 0.625rem;
+}
+.menu-row__cta svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+@media (max-width: 640px) {
+  .menu-row {
+    flex-wrap: wrap;
+  }
+  .menu-row__cta {
+    margin-left: calc(2rem + 2.75rem + var(--space-4));
+  }
+}
+
+/* --- Switch-program cards ---------------------------------------------- */
+.switch-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  transition: border-color var(--dur-fast, 150ms) var(--ease),
+    box-shadow var(--dur-base, 220ms) var(--ease),
+    transform var(--dur-base, 220ms) var(--ease);
+}
+.switch-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+.switch-card[aria-current='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.switch-card__grade {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.switch-card__title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.25;
+}
+.switch-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+.switch-card__price {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--accent);
+}
+.switch-card__current {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.switch-card__foot svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  color: var(--accent);
+  transition: transform var(--dur-base, 220ms) var(--ease);
+}
+.switch-card:hover .switch-card__foot svg {
+  transform: translateX(3px);
+}
+
+/* --- Free assessment: notice panel ------------------------------------- */
+.notice {
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border-on-brand);
+}
+.notice p {
+  color: var(--fg-on-brand-muted);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  margin-top: var(--space-2);
+}
+
+/* --- Two-column prose (legal pages) ------------------------------------ */
+.prose {
+  max-width: 68ch;
+}
+.prose h2 {
+  font-size: var(--text-lg);
+  margin-top: var(--space-10);
+}
+.prose p {
+  color: var(--fg-muted);
+  line-height: var(--leading-relaxed);
+  margin-top: var(--space-4);
+}
+.prose ul {
+  margin-top: var(--space-4);
+  padding-left: var(--space-5);
+  color: var(--fg-muted);
+  line-height: var(--leading-relaxed);
+}
+.prose li + li {
+  margin-top: var(--space-2);
+}
