@@ -70,7 +70,6 @@ function homePage() {
     const program = D.programs.find(p => p.slug === pick.slug);
     return reveal(card({ tone: 'clay' },
       cardMedia(program.grade, { icon: cardIcon(pick.icon), src: program.image, alt: `Students in the ${program.gradeLabel} age group` }) +
-      cardEyebrow(program.grade) +
       cardTitle(program.title, { size: 'lg' }) + cardBody(pick.blurb)
     ), { delay: i * 90 });
   }).join('\n');
