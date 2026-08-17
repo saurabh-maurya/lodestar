@@ -42,13 +42,35 @@
   --ls-blue-100: #d3e6f7;
   --ls-blue-50: #eff6fc; /* tinted section background */
 
-  /* Neutrals */
+  /* Neutrals — gently warmed off the old blue-grey so surfaces read as
+     inviting rather than corporate. Kept close to neutral (a hint of warmth,
+     not full greige) so they never fight the blue; the real warmth comes from
+     the coral accent below. All still clear WCAG AA in their text roles. */
   --ls-white: #ffffff;
-  --ls-gray-50: #f4f7fb; /* subtle surface, most cards */
-  --ls-gray-200: #dee5ee; /* hairline borders */
-  --ls-gray-400: #a5a9af;
-  --ls-gray-600: #55637a; /* muted body copy */
-  --ls-gray-700: #4c5360;
+  --ls-gray-50: #f6f6f4; /* subtle surface, most cards */
+  --ls-gray-200: #e6e4df; /* hairline borders */
+  --ls-gray-400: #a8a49d;
+  --ls-gray-600: #5c5851; /* muted body copy — ~6.8:1 on white */
+  --ls-gray-700: #524f49;
+
+  /* Warm accent — coral. The warmth the brief asks for: friendly and
+     approachable for kids and parents, not a cold corporate blue. Used for
+     emphasised headline words and soft coral surfaces, never for small body
+     text. --ls-coral-600 is the ink step (AA for large/heading text on
+     white); --ls-coral-500 is the accent; --ls-coral-100 the soft surface. */
+  --ls-coral-600: #d85a3c;
+  --ls-coral-500: #f2765c;
+  --ls-coral-300: #f7a793;
+  --ls-coral-100: #fce4dc;
+
+  /* Friendly secondary — teal. A fresh counterpoint to the blue that keeps
+     the palette playful. --ls-teal-600 is the AA ink step on white. */
+  --ls-teal-600: #12907f;
+  --ls-teal-500: #1fb0a0;
+  --ls-teal-100: #d4f0ec;
+
+  /* Ratings — warm amber/gold, the conventional colour for stars. */
+  --ls-amber-500: #f2a63c;
 
   /* Both gradients are the exact values declared on the Figma layers. */
   --ls-gradient-hero: linear-gradient(98.53deg, #0e2547 0%, #2a63a8 86.96%);
@@ -71,7 +93,7 @@
   --text-lg: 1.125rem; /* 18px — feature titles */
   --text-xl: 1.3125rem; /* 21px — card titles */
   --text-2xl: 2rem; /* 32px */
-  --text-3xl: 2.625rem; /* 42px — section headings */
+  --text-3xl: 2.8125rem; /* 45px — section headings (bumped for more presence) */
   --text-4xl: 3rem; /* 48px — page headings */
   --text-5xl: 3.75rem; /* 60px — hero display */
 
@@ -124,6 +146,16 @@
   --nav-pad-y: 0.6875rem; /* 11px */
   --nav-gutter: var(--space-4); /* minimum breathing room at the viewport edge */
   --nav-block: calc(var(--nav-top) + var(--nav-h));
+
+  /* The single knob for the gap between the floating nav and the first band of
+     content on every page. --nav-block is the space the pill physically
+     occupies; --header-offset adds a consistent breathing gap (--space-16)
+     below it, and is what the first section on every page reserves as its top
+     padding. Every hero anchors its content to this offset, so the nav→title
+     distance is identical page to page rather than drifting with how tall the
+     hero's content happens to be. Change this one value to retune that gap
+     everywhere at once. */
+  --header-offset: calc(var(--nav-block) + var(--space-16));
 
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   /* For travel long enough that the default ease-out reads as linear: a
@@ -275,7 +307,10 @@
      atmosphere, not a UI material, so this stays independent of the clay
      surfaces that float on top of it. Same three steps of blue already in
      the palette (--ls-blue-200/400/650), just diffused. */
-  --mesh-1: rgba(190, 220, 243, 0.85);
+  /* The top-right blob is now a soft coral rather than a third blue, so every
+     light hero carries a warm glow on one side and cool blues on the other —
+     the warm/approachable balance the palette is built around. */
+  --mesh-1: rgba(250, 206, 190, 0.72);
   --mesh-2: rgba(111, 179, 228, 0.55);
   --mesh-3: rgba(42, 112, 180, 0.24);
 
@@ -309,6 +344,24 @@
   --accent-hover: #24619b;
   --accent-fg: var(--ls-white);
   --accent-soft: var(--ls-blue-200);
+
+  /* Warm accent — the friendly, approachable pop across the site. --warm is
+     the coral itself (fine over dark heroes and as a fill); --warm-ink is the
+     AA-safe step for coral text/marks on light surfaces; --warm-soft is a
+     tint for badge and highlight backgrounds. */
+  --warm: var(--ls-coral-500);
+  --warm-ink: var(--ls-coral-600);
+  --warm-soft: var(--ls-coral-100);
+  --warm-fg: var(--ls-white);
+
+  /* Friendly secondary — teal, for affirmations (checklist ticks) and the
+     occasional second-colour accent. */
+  --secondary: var(--ls-teal-500);
+  --secondary-ink: var(--ls-teal-600);
+  --secondary-soft: var(--ls-teal-100);
+
+  /* Star ratings. */
+  --rating: var(--ls-amber-500);
 
   --border: var(--ls-gray-200);
   /* Was a light blue-grey (#c2cfe0); now a real dark blue, so the surfaces

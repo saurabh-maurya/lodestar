@@ -53,9 +53,9 @@
 
 <div class="container container--wide">
 <div class="page-hero__copy">
-    <p class="overline"><span class="flex items-center gap-2"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" width="12" height="12"><rect x="3.25" y="7" width="9.5" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Secure · HTTPS · no card details on this page</span></p>
+    <p class="overline"><span class="flex items-center gap-2"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" width="12" height="12"><rect x="3.25" y="7" width="9.5" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Secure checkout · demo — no real payment is processed</span></p>
     <h1 class="h1 mt-4" data-hero-title>Confirm & pay</h1>
-    <p class="lead mt-5 measure">Review the amount below. Nothing is charged until you confirm.</p>
+    <p class="lead mt-5 measure">Review the amount and enter payment details below. This is a UI demo — nothing is charged.</p>
     
     
   </div>
@@ -65,14 +65,14 @@
 <section class="section section--plain payment-band">
 <div class="container">
 
-<div data-component="payment-form">
+<div data-component="payment-form" class="reveal" data-reveal>
   <div data-payment-empty hidden class="pay pay--empty">
     <p class="body">We don't have your registration details yet — that step comes first.</p>
     <a class="btn btn--primary btn--auto mt-2" href="programs-register.html#register"><span class="roll"><span class="roll__in">Start registration</span><span class="roll__out" aria-hidden="true">Start registration</span></span></a>
   </div>
   <form data-flow="/api/enrol" data-component="payment-form-el">
   <div class="form-card" data-shake="">
-    <div><h2 class="h3">Confirm & pay</h2><p class="body mt-3">Nothing is charged on this screen — review your order and confirm.</p></div>
+    <div><h2 class="h3">Checkout</h2><p class="body mt-3">Review your order and enter payment details to reserve your slot.</p></div>
     <div class="sr-only" aria-hidden="true"><label for="company-website">Leave this field empty</label><input id="company-website" name="companyWebsite" tabindex="-1" autocomplete="off"></div>
     <input type="hidden" name="programSlug">
     <input type="hidden" name="course">
@@ -85,11 +85,37 @@
     <input type="hidden" name="parentMobile">
     <input type="hidden" name="testEmail">
     <dl class="pay__rows">
-      <div><dt>Registering</dt><dd data-summary="registering"></dd></div>
-      <div><dt>Parent</dt><dd data-summary="parent"></dd></div>
+      <div data-summary-row="registering"><dt>Registering</dt><dd data-summary="registering"></dd></div>
+      <div data-summary-row="parent"><dt>Parent</dt><dd data-summary="parent"></dd></div>
       <div><dt>Course</dt><dd data-summary="course"></dd></div>
       <div><dt>Duration</dt><dd data-summary="duration"></dd></div>
     </dl>
+    <div class="pay__section">
+      <p class="pay__section-title">Payment details</p>
+      <p class="pay__demo"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" width="12" height="12"><rect x="3.25" y="7" width="9.5" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg><span>Demo checkout — these are placeholder fields. No real card is charged, validated or stored.</span></p>
+      <div class="field-group">
+  <label class="field__label" for="cardName">Name on card</label>
+  <div class="field"><input class="input" id="cardName" name="cardName" type="text" placeholder="Name as printed on card" autocomplete="off" required><svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg><p class="field__error" id="cardName-error"></p></div>
+</div>
+      <div class="field-group">
+  <label class="field__label" for="cardEmail">Email for receipt</label>
+  <div class="field"><input class="input" id="cardEmail" name="cardEmail" type="email" placeholder="you@example.com" autocomplete="off" required><svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg><p class="field__error" id="cardEmail-error"></p></div>
+</div>
+      <div class="field-group">
+  <label class="field__label" for="cardNumber">Card number</label>
+  <div class="field"><input class="input" id="cardNumber" name="cardNumber" type="text" placeholder="1234 5678 9012 3456" autocomplete="off" inputmode="numeric" maxlength="19" required><svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg><p class="field__error" id="cardNumber-error"></p></div>
+</div>
+      <div class="pay__card-row">
+        <div class="field-group">
+  <label class="field__label" for="cardExpiry">Expiry</label>
+  <div class="field"><input class="input" id="cardExpiry" name="cardExpiry" type="text" placeholder="MM/YY" autocomplete="off" inputmode="numeric" maxlength="5" required><svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg><p class="field__error" id="cardExpiry-error"></p></div>
+</div>
+        <div class="field-group">
+  <label class="field__label" for="cardCvc">CVC</label>
+  <div class="field"><input class="input" id="cardCvc" name="cardCvc" type="text" placeholder="123" autocomplete="off" inputmode="numeric" maxlength="4" required><svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg><p class="field__error" id="cardCvc-error"></p></div>
+</div>
+      </div>
+    </div>
     <div class="field-group">
       <label class="field__label" for="discountCode">Discount code</label>
       <div class="field">
@@ -100,13 +126,13 @@
 </div>
     </div>
     <div class="pay__total"><span>Total amount</span><strong data-pay-total></strong></div>
-    <button class="btn btn--primary btn--block" type="submit" data-idle-label="Confirm & pay" data-busy-label="Submitting…" data-done-label="Registration received">
+    <button class="btn btn--primary btn--block" type="submit" data-idle-label="Confirm & pay" data-busy-label="Processing…" data-done-label="Registration received">
   <svg class="spinner" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5" opacity="0.28"/><path d="M20.5 12a8.5 8.5 0 0 0-8.5-8.5"/></svg>
   <span class="roll"><span class="roll__in">Confirm & pay</span><span class="roll__out" aria-hidden="true">Confirm & pay</span></span>
   <svg class="btn__check" style="display:none" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>
   <svg class="btn__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg>
 </button>
-    <p class="pay__note">You will not be charged on this screen. We confirm your slot and send a payment link by email within one working day.</p>
+    <p class="pay__note"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" width="12" height="12"><rect x="3.25" y="7" width="9.5" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg> This is a UI demo — no payment is processed. On the live site we confirm your slot and email a secure payment link within one working day.</p>
   </div>
 </form>
 </div>
@@ -153,8 +179,6 @@
 <span class="flex items-center gap-3"><span class="footer__sep" aria-hidden="true">·</span><a href="legal-terms-conditions.html">Terms & Conditions</a></span>
 <span class="flex items-center gap-3"><span class="footer__sep" aria-hidden="true">·</span><a href="legal-refund-policy.html">Refund Policy</a></span></div>
     </div>
-    <p class="footer__credits">Student photography: <a href="https://commons.wikimedia.org/wiki/File:Students_at_a_school_in_Bangalore,_India_learning_to_code_on_Progate.jpg" rel="noopener noreferrer nofollow">Nayakyashraj</a>, <a href="https://commons.wikimedia.org/wiki/File:A_picture_of_the_students_of_Srishti_College,_Bangalore_learning_about_the_history_of_Jakkur.jpg" rel="noopener noreferrer nofollow">Mythic Society Inscriptions 3D Scanning Project</a> and <a href="https://commons.wikimedia.org/wiki/File:Nichole_panel_discussion_with_Christ_students.jpg" rel="noopener noreferrer nofollow">Gopala Krishna A</a>, via Wikimedia Commons, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer nofollow">CC BY-SA 4.0</a>. Cropped from the originals.</p>
-    <p class="footer__credits">Illustrations by <a href="https://storyset.com" rel="noopener noreferrer nofollow">Storyset</a>.</p>
   </div>
 </footer>
 <div class="floatcta" data-visible="false" aria-hidden="true" inert>

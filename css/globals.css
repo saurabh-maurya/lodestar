@@ -136,10 +136,10 @@ p {
 }
 
 .section {
-  padding-block: clamp(var(--space-16), 8vw, var(--space-28));
+  padding-block: clamp(var(--space-12), 7vw, var(--space-20));
 }
 .section--tight {
-  padding-block: clamp(var(--space-12), 6vw, var(--space-20));
+  padding-block: clamp(var(--space-10), 5vw, var(--space-16));
 }
 
 /* The header floats over the page rather than sitting in the flow, so the
@@ -148,12 +148,12 @@ p {
    spacing the design gives them. */
 main > :first-child {
   padding-block-start: max(
-    var(--section-pad-start, clamp(var(--space-16), 8vw, var(--space-28))),
-    calc(var(--nav-block) + var(--space-12))
+    var(--section-pad-start, clamp(var(--space-12), 7vw, var(--space-20))),
+    var(--header-offset)
   );
 }
 main > .section--tight:first-child {
-  --section-pad-start: clamp(var(--space-12), 6vw, var(--space-20));
+  --section-pad-start: clamp(var(--space-10), 5vw, var(--space-16));
 }
 
 /* In-page anchors (#faq, #videos, #contact) must clear the floating pill. */
@@ -217,6 +217,14 @@ main [id] {
   grid-template-columns: 1fr 1.02fr;
   align-items: start;
 }
+/* Alternating direction: the media swaps to the other side so consecutive
+   image+text bands read as a left/right rhythm rather than the same layout
+   stacked twice. On a stacked single column it has no effect (source order
+   already puts the copy first). */
+@media (min-width: 1081px) {
+  .split--reverse > *:first-child { order: 2; }
+  .split--reverse > *:last-child { order: 1; }
+}
 /* Career Experts / Student Experts (app/experts): the photo swaps sides
    between the two panels so the page reads as a conversation moving back
    and forth rather than the same layout repeated twice down the page. */
@@ -269,10 +277,14 @@ main [id] {
    headline's own weight. */
 .heading__mark {
   font-style: normal;
+  /* The emphasis word each headline is about takes a blue shade — light blue
+     where it sits over a dark band, the accent blue on light bands (below).
+     The warm coral now lives on secondary accents (ratings, the "Most chosen"
+     ribbon) rather than the headline word. */
   color: var(--ls-blue-400);
 }
 /* On a light band the light blue would disappear, so there it takes the
-   accent instead — same role, legible ink. */
+   accent blue instead — same role, legible ink. */
 .section:not(.section--hero):not(.section--brand) .heading__mark {
   color: var(--accent);
 }
@@ -595,14 +607,19 @@ main [id] {
      the copy underneath would ride up over the tag chip. */
   margin: calc(clamp(var(--space-6), 2.2vw, var(--space-8)) * -1)
     calc(clamp(var(--space-6), 2.2vw, var(--space-8)) * -1) 0;
-  min-height: 8.5rem;
+  /* A fixed aspect ratio, not a min-height: every thumbnail in a row is then
+     exactly the same height regardless of the photo's own dimensions, which
+     is what stops the misaligned/ragged card grids. The image fills this box
+     via object-fit below, so it is cropped to fit rather than setting the
+     height itself. */
+  aspect-ratio: 16 / 10;
   display: flex;
   align-items: flex-end;
   padding: var(--space-4);
   background: var(--ls-gradient-media);
 }
 .card__media--tall {
-  min-height: 12rem;
+  aspect-ratio: 4 / 3;
 }
 /* A real photo instead of the gradient placeholder — same slot, same tag
    chip on top, but the chip needs its own stacking context and a scrim
@@ -611,7 +628,11 @@ main [id] {
   background: var(--ls-navy-900);
 }
 .card__media-img {
+  position: absolute;
+  inset: 0;
   z-index: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 .card__media--photo::after {
@@ -643,6 +664,57 @@ main [id] {
   width: 0.875rem;
   height: 0.875rem;
   color: var(--accent);
+}
+
+/* --- Category / tag badges --------------------------------------------- */
+/* A scannable pill that sits in the card body (below the media), distinct
+   from .card__tag which rides on the image. Spacing to its neighbours is left
+   to the card's owl rhythm below, so the badge element carries no margins. */
+.card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.6875rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  background: var(--ls-blue-50);
+  color: var(--ls-navy-800);
+  border: 1px solid var(--ls-gray-200);
+}
+.badge svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--accent);
+}
+/* The primary category — the accent pill that reads first. */
+.badge--accent {
+  background: var(--accent-soft);
+  color: var(--ls-navy-900);
+  border-color: transparent;
+}
+.card--navy .badge,
+.card--on-brand .badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--ls-white);
+  border-color: var(--border-on-brand);
+}
+/* Slightly larger in the program cards so the category keeps pace with the
+   enlarged grade chip and title. */
+.program .badge {
+  font-size: var(--text-sm);
+  padding: 0.375rem 0.8125rem;
+}
+.card > .card__badges + .card__title,
+.card > .card__badges + * {
+  margin-top: var(--space-3);
 }
 
 /* --- Copy --------------------------------------------------------------- */
@@ -808,6 +880,7 @@ main [id] {
   align-items: center;
   gap: 0.375rem;
   color: inherit;
+  text-decoration: none;
   transition: gap var(--duration) var(--ease);
 }
 .card__cta:hover {
@@ -816,6 +889,14 @@ main [id] {
 .card__cta svg {
   width: 0.875rem;
   height: 0.875rem;
+}
+/* On a clickable card the CTA has to read as a link AT REST, not only on
+   hover — that persistent accent-coloured "Explore →" is the standing signal
+   that the whole card is a link. (Previously it inherited the muted meta
+   colour and only lit up on hover, so the cards looked inert.) */
+.card--link .card__cta {
+  color: var(--accent);
+  font-weight: 700;
 }
 /* A URL is reference, not reading matter: it truncates rather than wrapping
    to three lines and pushing the card's footer out of alignment. */
@@ -1231,8 +1312,16 @@ main [id] {
   width: 0.875rem;
   height: 0.875rem;
   margin-top: 0.3rem;
-  color: currentColor;
-  opacity: 0.85;
+  /* The friendly teal secondary — the affirmation tick reads as its own warm
+     accent rather than dimmed body ink. Bright enough on both light bands and
+     the navy hero the check-list also sits on. */
+  color: var(--secondary);
+  opacity: 1;
+}
+/* On the soft brand band the mid-teal loses contrast against the pale blue —
+   drop to the deeper ink step there. */
+.section--soft .check-list svg {
+  color: var(--secondary-ink);
 }
 
 .dot-list {
@@ -1480,7 +1569,7 @@ main [id] {
 .stars {
   display: flex;
   gap: 0.1875rem;
-  color: var(--accent);
+  color: var(--rating);
 }
 .stars svg {
   width: 1rem;
@@ -1532,6 +1621,39 @@ main [id] {
   font-size: var(--text-base);
   font-weight: 500;
   color: var(--fg-muted);
+}
+
+/* --- School logo chips ---------------------------------------------------
+   A placeholder "logo" (the same initials avatar the testimonials use) next
+   to each partner name, so the trust row reads as a row of institutions
+   rather than a plain list of text — real crests can drop into the avatar
+   slot once schools supply them. */
+.school-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4) var(--space-5);
+}
+.school-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5) var(--space-3) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  transition: border-color var(--duration) var(--ease),
+    transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+.school-logo:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.school-logo span {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--fg);
 }
 
 .divider {

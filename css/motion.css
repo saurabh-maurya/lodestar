@@ -139,6 +139,24 @@
   position: relative;
   z-index: 2;
 }
+/* The persistent "Explore" row is the at-rest signal that the whole card is
+   a link; hovering anywhere on the card (not just the cta text) is what
+   should light it up, since the stretched hit area means anywhere IS the
+   link. */
+.card--link .card__cta svg {
+  transition: transform var(--dur-base) var(--ease);
+}
+.card--link:hover .card__cta {
+  gap: 0.625rem;
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.card--link:hover .card__cta svg {
+  transform: translateX(3px);
+  text-decoration: none;
+}
 
 /* The visual anchor leans in with the card. Scale only — the tile keeps its
    grid position, so nothing around it reflows. */
@@ -165,6 +183,15 @@
   z-index: 0;
 }
 .card:hover .card__media::before {
+  transform: scale(1.06);
+}
+/* Photo thumbnails sit opaque above ::before, so the gradient's zoom never
+   shows on them — the image itself has to carry the same hover motion, so a
+   photo card and a gradient card animate identically. */
+.card__media-img {
+  transition: transform var(--dur-slow) var(--ease);
+}
+.card:hover .card__media-img {
   transform: scale(1.06);
 }
 /* The chip has to stay above the layer that is moving under it. */
@@ -1060,6 +1087,21 @@
    shortest card in the row that leaves it sitting almost on the rule above
    it. This is the floor: the rule always gets clear air beneath it before
    the button starts. */
+/* The grade is the first thing a parent scans for on this page — "which
+   card is my child's grade" — so it reads at a size that wins the scan
+   instead of the text-xs chip every other card's category tag uses. */
+.program .card__tag {
+  padding: 0.5rem 0.9375rem;
+  font-size: var(--text-md);
+  font-weight: 800;
+}
+.program .card__eyebrow {
+  font-size: var(--text-sm);
+}
+.program .card__tag svg {
+  width: 1.0625rem;
+  height: 1.0625rem;
+}
 .program .card__meta--inline {
   margin-bottom: var(--space-6);
 }
@@ -1881,6 +1923,7 @@
   }
   .card:hover .card__icon,
   .card:hover .card__media::before,
+  .card:hover .card__media-img,
   .card:hover .card__tag,
   .post-row:hover .post-row__thumb,
   .arrow-row:hover svg,

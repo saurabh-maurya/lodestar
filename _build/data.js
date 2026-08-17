@@ -20,10 +20,44 @@ const whyLodestar = [
   { title: 'End-to-end decisions', body: 'From career and stream to electives, exams, tutorials and college — documented, not just discussed.' },
 ];
 
+const schoolDifferentiators = [
+  'A 3-year structured journey, not a one-off talk',
+  'Individual attention: 3 one-to-one sessions per child',
+  'Whole-cohort testing plus a school-level insight report',
+  'Already aligned with evolving CBSE career-guidance guidelines',
+];
+
 const schoolPhases = [
   { pill: 'Phase 01 · Class 8', icon: 'spark', title: 'Inspire', body: 'Career awareness workshops for parents, self-discovery workshops for students, meetups with role models and learning-style reports.' },
   { pill: 'Phase 02 · Class 9', icon: 'chart', title: 'Inform', body: 'Exposure to 250+ careers, career-related quizzes and scientific career-personality testing for the whole cohort.' },
   { pill: 'Phase 03 · Class 10', icon: 'chat', title: 'Initiate', body: 'Three one-to-one counselling sessions per child, top two career decisions and a college-to-career plan with a 20-page report.' },
+];
+
+/* The two audiences beyond individual families, shown side by side on the
+   home page so a visitor can tell at a glance which offer is theirs. The
+   school names are the real partner list already used elsewhere on the site;
+   the institution names are invented placeholders — swap for real partners. */
+const audienceSegments = [
+  {
+    id: 'schools', icon: 'school', label: 'For Schools',
+    tagline: 'Career guidance, embedded in your school',
+    image: 'images/illustrations/for-schools-hero.svg',
+    imageAlt: 'An illustration of students outside their school',
+    desc: 'The Career Leaders Program runs structured, scientific career guidance inside your school across Grades 8–12 — delivered on campus by Lodestar counsellors and reported back to parents.',
+    offers: ['Whole-cohort psychometric & aptitude screening', 'On-campus one-to-one counsellor sessions', 'Parent reports plus a school career-insight dashboard'],
+    cta: { label: 'Explore the Career Leaders Program', href: 'for-schools.html' },
+    members: ['GEAR Innovative Intl. School', 'Deens Academy', 'National Public School', 'Ekya Schools', 'Greenwood High'],
+  },
+  {
+    id: 'institutions', icon: 'users', label: 'For Institutions',
+    tagline: 'Assessment & counsellor training at scale',
+    image: 'images/illustrations/career-experts-panel.svg',
+    imageAlt: 'An illustration of a panel of career experts',
+    desc: 'Colleges, pre-university boards and education companies license the Lodestar assessment engine and counsellor training to run guidance at scale under their own brand.',
+    offers: ['White-label psychometric assessment engine', 'Counsellor certification on the Lodestar method', 'Bulk student guidance and researched career libraries'],
+    cta: { label: 'Talk to us about partnerships', href: 'contact.html' },
+    members: ['Nova Junior College', 'Horizon University', 'BrightPath EdTech', 'Meridian PU College', 'Insight Learning Group'],
+  },
 ];
 
 const featuredQuote = {
@@ -32,17 +66,47 @@ const featuredQuote = {
   role: 'Parent · Deens Academy',
 };
 
+/* Shared across the home carousel (a 4-quote preview) and the full
+   testimonials page (all six, in the grid). */
+const parentReviews = [
+  { quote: 'Hats off to Lodestar for the range of career options they laid out on the table for my son. The volume of research they have done into different careers is amazing. I appreciate the skill sets of their team, the follow-up and the team spirit.', name: 'Santhosh', role: 'Parent · Innisfree House School' },
+  { quote: "I'm really happy with the solution offered by Lodestar. With exposure to over 250 careers and a comprehensive career plan from career to college, they have truly enabled us to make a smart career decision for our child.", name: 'Anil', role: 'Parent · Samved' },
+  { quote: 'The program provided information in a structured manner. The interaction with the specialist serves as a second opinion for the student, reducing parental pressure and bias.', name: 'Narendranath Pai', role: 'Parent · Innisfree' },
+  { quote: 'The program provided a range of options open for my daughter, and helped her decide the way forward. An exceptional program recommended to all students who are yet to firm up their career choices.', name: 'Korath Abraham', role: 'Parent · Deens Academy' },
+  { quote: 'The counsellor who guided us throughout the program was very enthusiastic and all our queries were answered without hesitation. I would surely recommend Lodestar to other parents.', name: 'Ram Prakash', role: 'Parent · Greenwood High' },
+  { quote: 'Your career guidance program is truly exceptional and very informative. The approach quality and guiding capability of your counsellor is really appreciable, and the data collected by your research team is informative.', name: 'Toufiqul', role: 'Parent · Al Ameen Residential School' },
+];
+
+/* A short, purpose-built set for the home-page auto-rotating carousel: parent
+   name, the child's grade, and one tight quote each (the grid on the
+   testimonials page still shows the full parentReviews with school
+   attributions). The grades here are illustrative — confirm or adjust. */
+const parentVoices = [
+  { quote: 'The counsellor gave my daughter a clear, researched path instead of opinions. She finally feels sure about her stream.', name: 'Shantanu', role: 'Parent of a Class 10 student' },
+  { quote: 'A structured process that replaced our guesswork with real data. Worth every rupee.', name: 'Narendranath Pai', role: 'Parent of a Class 9 student' },
+  { quote: 'It opened up options we had never considered, then helped him decide with confidence.', name: 'Korath Abraham', role: 'Parent of a Class 12 student' },
+  { quote: 'Every question we had was answered patiently, and we walked away with a written plan we trust.', name: 'Ram Prakash', role: 'Parent of a Class 11 student' },
+];
+
+/* A few short parent video stories for the home-page carousel. Kept to three
+   — the full set lives on the testimonials page. Each links there to watch. */
+const videoTestimonials = [
+  { quote: "We found all the information we needed to plan our child's career.", name: 'Shantanu', role: 'Parent of a Class 10 student', image: 'images/parent-child-home.jpg', alt: 'A parent and child talking at home' },
+  { quote: 'She discovered wide career options in the Arts she never knew existed.', name: 'Korath Abraham', role: 'Parent of a Class 12 student', image: 'images/program-class1112.jpg', alt: 'Students discussing career options together' },
+  { quote: 'Lodestar helped us find a world of careers well beyond engineering.', name: 'Ram Prakash', role: 'Parent of a Class 11 student', image: 'images/founders-campus.jpg', alt: 'Students at work in a modern classroom' },
+];
+
 const resourceCards = [
   { tag: 'Sample Report', icon: 'document', title: 'See exactly what you get', body: 'The full 30-page education plan we hand over at the end of the program — download the real sample.', href: 'programs.html#outcome' },
   { tag: 'FAQ', icon: 'help', title: 'Common questions, answered', body: "Scheduling, test preparation, who your counsellor will be, and what happens if you're unhappy.", href: 'programs.html#faq' },
-  { tag: 'Videos', icon: 'video', title: 'Founder & parent stories', body: 'Career mantras and parent interviews, now playing inline instead of sending you off to social media.', href: 'resources.html#videos' },
-  { tag: 'Blog', icon: 'journal', title: 'Career guidance journal', body: 'Longer reads on streams, entrance exams and the decisions families face after Class 10.', href: 'resources.html#blog' },
+  { tag: 'Videos', icon: 'video', title: 'Founder & parent stories', body: 'Career mantras and parent interviews, now playing inline instead of sending you off to social media.', href: 'testimonials.html#videos' },
+  { tag: 'Blog', icon: 'journal', title: 'Career guidance journal', body: 'Longer reads on streams, entrance exams and the decisions families face after Class 10.', href: 'resources.html' },
 ];
 
 const programs = [
   {
     slug: 'foundation-building-plus', image: 'images/program-class9.jpg', titleLines: ['Foundation', 'Building PLUS'], titleAccent: 'PLUS',
-    grade: 'Class 9', gradeLabel: '9th Grade', title: 'Foundation Building PLUS', price: '₹12,000', amount: 12000, duration: '13 weeks', featured: true,
+    grade: 'Class 9', gradeLabel: '9th Grade', title: 'Foundation Building PLUS', tag: 'Stream discovery', price: '₹12,000', amount: 12000, duration: '13 weeks', featured: true,
     items: ['Psychometric + aptitude + interest test', '4 group webinars', '3 one-to-one expert sessions', '30-page report + stream decision'],
     detail: {
       outcome: ["Child's potential mapping", 'Awareness for child on — Personality, Aptitude, Interest, Aspiration', 'Awareness for child on World of Work — basics of working', 'Info and awareness on careers in Science, Arts, Commerce', 'Decision on stream + education path post Grade 10'],
@@ -56,7 +120,7 @@ const programs = [
   },
   {
     slug: 'foundation-building', image: 'images/program-class9.jpg', titleLines: ['Foundation', 'Building'],
-    grade: 'Class 9', gradeLabel: '9th Grade', title: 'Foundation Building', price: '₹5,000', amount: 5000, duration: '8 weeks',
+    grade: 'Class 9', gradeLabel: '9th Grade', title: 'Foundation Building', tag: 'Early awareness', price: '₹5,000', amount: 5000, duration: '8 weeks',
     items: ['Psychometric + aptitude + interest test', '4 group webinars', 'Careers across Science, Commerce, Arts', 'Potential mapping report'],
     detail: {
       outcome: ["Child's potential mapping", 'Awareness for child on — Personality, Aptitude, Interest, Aspiration', 'Awareness for child on World of Work — basics of working', 'Info and awareness on careers in Science, Arts, Commerce'],
@@ -69,7 +133,7 @@ const programs = [
   },
   {
     slug: 'core-decision', image: 'images/program-class10.jpg', titleLines: ['Core', 'Decision'],
-    grade: 'Class 10', gradeLabel: '10th Grade', title: 'Core Decision', price: '₹7,000', amount: 7000, duration: '7 weeks',
+    grade: 'Class 10', gradeLabel: '10th Grade', title: 'Core Decision', tag: 'Stream & subjects', price: '₹7,000', amount: 7000, duration: '7 weeks',
     items: ['Career Plan A + Plan B', 'Stream & +2 subject combination', 'Entrance exams to target in 12th', 'Degree and college shortlist'],
     detail: {
       outcome: ['Career Plan A and Plan B', 'Stream and +2 subject combination decided', 'Entrance exams to target in 12th', 'Degree and college shortlist'],
@@ -83,7 +147,7 @@ const programs = [
   },
   {
     slug: 'finalizing-decision', image: 'images/program-class1112.jpg', titleLines: ['Finalizing', 'Decision'],
-    grade: 'Class 11 / 12', gradeLabel: '11th / 12th Grade', title: 'Finalizing Decision', price: '₹7,000', amount: 7000, duration: '5 weeks',
+    grade: 'Class 11 / 12', gradeLabel: '11th / 12th Grade', title: 'Finalizing Decision', tag: 'College & career', price: '₹7,000', amount: 7000, duration: '5 weeks',
     items: ['Degree & specialisation decision', 'Stream-specific career webinar', 'Tuition and entrance exam plan', 'Final college selection'],
     detail: {
       outcome: ['Degree and specialisation decision', 'Tuition and entrance exam plan', 'Final college selection'],
@@ -103,6 +167,24 @@ const assessments = [
   { icon: 'compass', eyebrow: 'Test 03', title: 'Interest inventory', duration: 'Untimed', format: 'No preparation', items: ['What your child is drawn to', 'Mapped against 250+ researched careers', 'Shortlists matched career families'] },
   { icon: 'journal', eyebrow: 'Test 04', title: 'Learning style report', duration: 'Untimed', format: 'No preparation', items: ['How your child takes information in', 'Feeds the study and tuition plan', 'Shared with you in the written report'] },
 ];
+
+/* Instructor / lead counsellor shown on the program detail page. Lodestar
+   runs a bench of 100+ counsellors rather than one named tutor, so this is a
+   representative lead — placeholder name and credentials, swap for a real
+   profile or a generic "your assigned counsellor" framing. */
+const programInstructor = {
+  name: 'Dr. Ananya Rao',
+  title: 'Lead Career Counsellor · Lodestar',
+  rating: '4.8',
+  ratingCount: '1,000+ families guided',
+  bio: 'Ananya has spent fifteen years helping students in Grades 8–12 turn an aptitude profile into a concrete stream-and-college plan. She trains the Lodestar counselling bench and personally reviews the written report every family walks away with.',
+  credentials: [
+    'M.A. Psychology · 15 years in career guidance',
+    'Trained on the Lodestar scientific assessment method',
+    'Has guided 1,000+ families to a confident decision',
+  ],
+  bench: 'Your sessions are delivered one-to-one by a trained counsellor from the same 100+ strong bench, backed by 60,000+ counselling sessions since 2011.',
+};
 
 const findProgram = (slug) => programs.find(p => p.slug === slug) || programs[0];
 const programNote = 'All webinars 1 hour duration. Test is online.';
@@ -177,7 +259,7 @@ const programLinks = [
 ];
 
 module.exports = {
-  heroStats, steps, whyLodestar, schoolPhases, featuredQuote, resourceCards, programs, assessments,
-  findProgram, programNote, rupees, howItWorks, methodSteps, principles, outcomes, faqs,
+  heroStats, steps, whyLodestar, schoolPhases, schoolDifferentiators, audienceSegments, featuredQuote, parentReviews, parentVoices, videoTestimonials, resourceCards, programs, assessments,
+  findProgram, programInstructor, programNote, rupees, howItWorks, methodSteps, principles, outcomes, faqs,
   expertPanels, expertSteps, expertSession, expertBadges, expertStats, expertProfiles, programLinks,
 };

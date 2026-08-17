@@ -103,10 +103,16 @@
      mainly written for, it gives the hero the full-viewport presence a
      first impression wants; on a short or narrow one it just falls back to
      however tall the copy and stats naturally run. */
-  min-height: min(94vh, 60rem);
+  min-height: min(82vh, 52rem);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Anchor content to the top (at --header-offset below the nav) rather than
+     centring it in the band. Centring made the nav→title gap drift page to
+     page — a copy-only hero floated its title low, a content-rich one sat
+     high. Top-aligned, every page opens at the same distance below the nav;
+     the min-height's slack now falls below the content, inside the hero's own
+     mesh atmosphere, instead of above it. */
+  justify-content: flex-start;
 }
 .section--hero-light::before {
   content: '';
@@ -587,6 +593,258 @@
   .cta-panel {
     border-radius: var(--radius-lg);
   }
+}
+
+/* --- Testimonial carousel -------------------------------------------------
+   One quote card per slide, scroll-snapped horizontally. The track does the
+   actual scrolling (native, momentum-friendly on touch); the prev/next
+   buttons and dots just drive that scroll position — see initCarousel() in
+   site.js for the sync between them.
+   ---------------------------------------------------------------------- */
+.carousel {
+  position: relative;
+}
+.carousel__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.carousel__track::-webkit-scrollbar {
+  display: none;
+}
+.carousel__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.carousel__slide .card {
+  height: auto;
+}
+.carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+.carousel__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--ls-navy-800);
+  transition: background-color var(--duration) var(--ease),
+    color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.carousel__btn:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+  transform: translateY(-1px);
+}
+.carousel__btn:active {
+  transform: scale(0.92);
+}
+.carousel__btn--prev svg {
+  transform: rotate(180deg);
+}
+.carousel__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.carousel__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--border-strong);
+  opacity: 0.35;
+  transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease),
+    background-color var(--duration) var(--ease);
+}
+.carousel__dot:hover {
+  opacity: 0.7;
+}
+.carousel__dot.is-active {
+  background: var(--accent);
+  opacity: 1;
+  transform: scale(1.25);
+}
+@media (prefers-reduced-motion: reduce) {
+  .carousel__track {
+    scroll-behavior: auto;
+  }
+}
+
+/* --- Video testimonial carousel ---------------------------------------
+   A poster with a play button that links through to the testimonials page.
+   The centred slide sits full and bright; the rest dim and shrink, and the
+   caption rises in as the slide becomes active. */
+.carousel-wrap {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+/* Peek / coverflow: JS translates the track to centre the active slide, and
+   the prev/next slides sit at the edges, dimmed and scaled back. */
+.carousel--video {
+  overflow: hidden;               /* clip the neighbours that run past the edges */
+  padding-block: var(--space-3);  /* room for the active slide's shadow */
+}
+.carousel--video .carousel__track {
+  overflow: visible;              /* no native scroll — the transform drives it */
+  scroll-snap-type: none;
+  gap: clamp(1rem, 3vw, 1.75rem);
+  transition: transform 600ms var(--ease-out-long);
+  will-change: transform;
+}
+.carousel--video .carousel__slide {
+  flex: 0 0 74%;
+  padding: var(--space-3) 0 var(--space-4);
+  cursor: pointer;
+  transition: opacity 450ms var(--ease), transform 450ms var(--ease);
+  opacity: 0.4;
+  transform: scale(0.88);
+}
+.carousel--video .carousel__slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+  cursor: default;
+}
+@media (max-width: 620px) {
+  .carousel--video .carousel__slide { flex-basis: 86%; }
+}
+
+.vtcard__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--ls-navy-900);
+  box-shadow: var(--shadow-lg);
+}
+.vtcard__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 6s var(--ease);
+}
+.vtcard__media:hover .vtcard__img { transform: scale(1.06); }
+.vtcard__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 22, 38, 0.12) 0%, rgba(11, 22, 38, 0) 34%, rgba(11, 22, 38, 0.74) 100%);
+}
+.vtcard__badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ls-navy-900);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.vtcard__badge svg { width: 0.9375rem; height: 0.9375rem; color: var(--accent); }
+.vtcard__play {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.vtcard__play-ring {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--accent);
+  box-shadow: 0 12px 32px rgba(11, 22, 38, 0.4);
+  transition: transform var(--duration) var(--ease), background-color var(--duration) var(--ease);
+}
+.vtcard__play-ring svg { margin-left: 3px; }
+.vtcard__media:hover .vtcard__play-ring {
+  transform: scale(1.08);
+  background: var(--ls-white);
+}
+/* The pulse ring — the animation on each slide. */
+.vtcard__play::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: -2.25rem 0 0 -2.25rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  animation: vt-pulse 2.4s var(--ease) infinite;
+}
+@keyframes vt-pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+.vtcard__overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: clamp(var(--space-5), 3vw, var(--space-8));
+  color: var(--ls-white);
+  /* Rises in when the slide becomes the active one. */
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 500ms var(--ease) 120ms, transform 500ms var(--ease) 120ms;
+}
+.carousel--video .carousel__slide.is-active .vtcard__overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+.vtcard__quote {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+.vtcard__quote::before { content: '\201C'; }
+.vtcard__quote::after { content: '\201D'; }
+.vtcard__by {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.125rem 0.5rem;
+  align-items: baseline;
+  font-size: var(--text-sm);
+}
+.vtcard__by span { color: rgba(255, 255, 255, 0.82); }
+@media (prefers-reduced-motion: reduce) {
+  .carousel--video .carousel__track,
+  .carousel--video .carousel__slide,
+  .vtcard__img,
+  .vtcard__overlay { transition: none; }
+  .vtcard__play::before { animation: none; }
+  .vtcard__overlay { opacity: 1; transform: none; }
 }
 
 /* --- Watermark band ---------------------------------------------------- */
@@ -1171,12 +1429,15 @@
    animation, never invisible content. Each instance carries its own
    --reveal-delay for the stagger. */
 [data-reveal] {
-  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+  /* 500ms keeps this in the subtle range — long enough to read as a rise,
+     short enough not to lag the scroll. Each instance adds its own
+     --reveal-delay so grids and card rows stagger in. */
+  transition: opacity 500ms var(--ease), transform 500ms var(--ease);
   transition-delay: var(--reveal-delay, 0ms);
 }
 [data-reveal='hidden'] {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(18px);
 }
 [data-reveal='shown'] {
   opacity: 1;
@@ -1683,6 +1944,17 @@
   justify-content: space-between;
   gap: var(--space-3);
 }
+.course-card__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.course-card__rating .stars svg {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
 .course-card__price {
   font-size: var(--text-2xl);
   font-weight: 800;
@@ -1735,6 +2007,421 @@
        reading the full curriculum, the same order the sidebar gives them on
        a wide screen. */
     order: -1;
+  }
+}
+
+/* --- Course hero meta bar (rating · duration · level) ------------------- */
+.course-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  margin-top: var(--space-6);
+  list-style: none;
+  padding: 0;
+}
+.course-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.course-meta__item strong { color: var(--fg); font-weight: 700; }
+.course-meta__item svg { width: 1rem; height: 1rem; color: var(--accent); flex: none; }
+.course-meta__sub { color: var(--fg-muted); font-weight: 400; }
+
+/* --- Instructor / lead counsellor block -------------------------------- */
+.instructor {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(var(--space-4), 3vw, var(--space-6));
+  align-items: start;
+}
+.instructor__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--clay-surface);
+  box-shadow: var(--clay-hi), var(--clay-lo);
+  color: var(--accent);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  flex: none;
+}
+.instructor__name { font-size: var(--text-lg); font-weight: 700; color: var(--fg); }
+.instructor__title { font-size: var(--text-sm); color: var(--accent); font-weight: 600; margin-top: 0.15rem; }
+.instructor__rating {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--text-sm); color: var(--fg-muted); margin-top: var(--space-2);
+}
+.instructor__rating .stars svg { width: 0.8125rem; height: 0.8125rem; }
+.instructor__bio { margin-top: var(--space-3); color: var(--fg-muted); line-height: var(--leading-relaxed); }
+.instructor__creds { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+.instructor__creds li { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-sm); color: var(--fg); }
+.instructor__creds svg { width: 0.9375rem; height: 0.9375rem; flex: none; margin-top: 0.2em; color: var(--success); }
+.instructor__bench {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  margin-top: var(--space-6); padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg); background: var(--bg-tint);
+  font-size: var(--text-sm); color: var(--fg-on-soft-muted); line-height: var(--leading-relaxed);
+}
+.instructor__bench-icon svg { width: 1.25rem; height: 1.25rem; color: var(--accent); flex: none; }
+@media (max-width: 520px) {
+  .instructor { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --- Checkout payment fields (modal + standalone payment page) ---------- */
+.pay__section {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+.pay__section-title { font-size: var(--text-md); font-weight: 700; color: var(--fg); }
+.pay__demo {
+  display: flex; align-items: flex-start; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--bg-tint);
+  font-size: var(--text-xs); color: var(--fg-on-soft-muted); line-height: var(--leading-normal);
+}
+.pay__demo svg { width: 0.9375rem; height: 0.9375rem; flex: none; margin-top: 0.15em; color: var(--accent); }
+.pay__card-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+
+/* --- Audience segments: Schools vs Institutions (home page) -------------
+   Two large panels side by side, so a visitor reads what each offer is and
+   who already uses it without switching tabs. Stacks to one column below
+   820px. Placeholder monogram logos stand in for real partner marks. */
+.segments {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-6), 3vw, var(--space-8));
+  align-items: stretch;
+}
+.segment {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+.segment:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.segment__media {
+  aspect-ratio: 16 / 9;
+  background: var(--bg-tint);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.segment__media img { width: 74%; height: 74%; object-fit: contain; }
+.segment__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: clamp(var(--space-6), 2.4vw, var(--space-8));
+}
+.segment__head { display: flex; align-items: center; gap: var(--space-4); }
+.segment__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--ls-navy-800);
+}
+.segment__icon svg { width: 1.5rem; height: 1.5rem; }
+.segment__title {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-heading);
+  color: var(--fg);
+}
+.segment__tagline { font-size: var(--text-sm); color: var(--accent); font-weight: 600; margin-top: 0.1rem; }
+.segment__desc { color: var(--fg-muted); line-height: var(--leading-relaxed); }
+.segment__logos { margin-top: var(--space-2); padding-top: var(--space-5); border-top: 1px solid var(--border); }
+.segment__logos-label {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: var(--space-3);
+}
+.segment__logo-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.segment__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.3125rem 0.75rem 0.3125rem 0.375rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--fg);
+}
+.segment__logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 800;
+  font-size: var(--text-xs);
+  flex: none;
+}
+.segment__cta { margin-top: auto; }
+@media (max-width: 820px) {
+  .segments { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --- Program cards — horizontal (programs page) -------------------------
+   Photo on one side, everything a parent compares on the other. A wide card
+   with the inclusions shown inline, on a soft blue-to-white wash. Two across
+   on desktop, stacking the photo above the copy on narrow screens. */
+.program-grid {
+  gap: clamp(var(--space-5), 2.5vw, var(--space-7));
+}
+.pcard {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(158deg, var(--ls-white) 0%, var(--ls-blue-50) 100%);
+  border: 1px solid var(--ls-blue-100);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
+}
+.pcard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+.pcard--featured {
+  border-color: var(--accent);
+  box-shadow: var(--clay-lift);
+}
+
+/* Media side */
+.pcard__media {
+  position: relative;
+  min-height: 15.5rem;
+  background: var(--ls-navy-900);
+  overflow: hidden;
+}
+.pcard__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease);
+}
+.pcard:hover .pcard__img { transform: scale(1.05); }
+.pcard__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 22, 38, 0) 45%, rgba(11, 22, 38, 0.5) 100%);
+  pointer-events: none;
+}
+/* The grade now lives in the card body as a bold, prominent label rather than
+   a small chip on the photo — it is the first thing a parent matches against
+   their child. */
+.pcard__grade {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-heading);
+  color: var(--accent);
+}
+.pcard__ribbon {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--warm);
+  color: var(--warm-fg);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(216, 90, 60, 0.35);
+}
+
+/* Body side */
+.pcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: clamp(var(--space-5), 2vw, var(--space-7));
+}
+.pcard__eyebrow {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pcard__title {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-tight);
+  color: var(--fg);
+  text-wrap: balance;
+}
+.pcard .program__accent { color: var(--warm-ink); }
+.pcard__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.pcard__price {
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  color: var(--fg);
+}
+.pcard__duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.pcard__duration svg { width: 0.9375rem; height: 0.9375rem; color: var(--accent); }
+.pcard__items {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ls-blue-100);
+}
+.pcard__items li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--fg-on-soft-muted);
+  line-height: var(--leading-normal);
+}
+.pcard__items svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--secondary);
+}
+.pcard__cta { margin-top: auto; }
+
+@media (max-width: 620px) {
+  .pcard { grid-template-columns: minmax(0, 1fr); }
+  .pcard__media { min-height: 0; aspect-ratio: 16 / 9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pcard:hover { transform: none; }
+  .pcard:hover .pcard__img { transform: none; }
+}
+
+/* --- Payment modal -------------------------------------------------------
+   The "Continue to payment" step as a dialog over the register page rather
+   than a second page. Native <dialog>: showModal() gets us the top layer,
+   the inert background and Esc-to-close for free — the CSS only has to
+   reset the UA chrome and add the one entrance beat every other panel on
+   this site gets. See openPaymentModal() in site.js. */
+.modal {
+  position: relative;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  max-width: min(34rem, 92vw);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: var(--radius-xl);
+  background: transparent;
+  box-shadow: var(--shadow-lg);
+}
+.modal::backdrop {
+  background: rgba(10, 18, 32, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.modal .form-card {
+  box-shadow: none;
+  margin: 0;
+}
+.modal[open] {
+  animation: modal-in 320ms var(--ease-out-long);
+}
+.modal[open]::backdrop {
+  animation: modal-backdrop-in 320ms var(--ease);
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal__close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--surface-subtle);
+  color: var(--fg-muted);
+  transition: background-color var(--dur-fast, 150ms) var(--ease),
+    color var(--dur-fast, 150ms) var(--ease), transform var(--dur-fast, 150ms) var(--ease);
+}
+.modal__close:hover {
+  background: var(--bg-tint);
+  color: var(--fg);
+}
+.modal__close:active {
+  transform: scale(0.92);
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal[open],
+  .modal[open]::backdrop {
+    animation: none;
   }
 }
 

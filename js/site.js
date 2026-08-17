@@ -751,6 +751,153 @@
   }
 
   /* ==========================================================================
+     Testimonial carousel — the buttons and dots drive the track's native
+     scroll; an IntersectionObserver on the slides keeps the dots in sync
+     when the visitor scrolls or swipes the track directly instead.
+     ========================================================================== */
+  function initCarousel() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-component="carousel"]'), function (root) {
+      var track = root.querySelector('[data-carousel-track]');
+      var slides = Array.prototype.slice.call(root.querySelectorAll('[data-carousel-slide]'));
+      var dots = Array.prototype.slice.call(root.querySelectorAll('[data-carousel-dot]'));
+      var prevBtn = root.querySelector('[data-carousel-prev]');
+      var nextBtn = root.querySelector('[data-carousel-next]');
+      if (!track || !slides.length) return;
+      var active = 0;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // The video carousel runs as a "peek"/coverflow: the active slide is
+      // centred by translating the track, with the prev/next slides showing
+      // dimmed at the edges. It also loops infinitely (see the ring below).
+      var peek = root.classList.contains('carousel--video');
+      var realCount = slides.length;
+      var TRANSITION_MS = 600;
+
+      // Infinite ring (peek only): clone the whole set on both sides so a
+      // centred slide always has real neighbours to peek at, then jump —
+      // transition-free — to a clone's identical twin whenever we drift off the
+      // middle copy. Originals live at indices realCount .. 2*realCount-1.
+      if (peek && realCount > 1) {
+        var before = document.createDocumentFragment();
+        var after = document.createDocumentFragment();
+        slides.forEach(function (s) {
+          var b = s.cloneNode(true), a = s.cloneNode(true);
+          [b, a].forEach(function (c) {
+            c.setAttribute('aria-hidden', 'true');
+            Array.prototype.forEach.call(c.querySelectorAll('a,button'), function (el) { el.setAttribute('tabindex', '-1'); });
+          });
+          before.appendChild(b);
+          after.appendChild(a);
+        });
+        track.insertBefore(before, slides[0]);
+        track.appendChild(after);
+        slides = Array.prototype.slice.call(track.querySelectorAll('[data-carousel-slide]'));
+        active = realCount; // first original
+      }
+
+      function realIndex(i) { return realCount > 1 ? ((i % realCount) + realCount) % realCount : i; }
+      function setActive(i) {
+        active = i;
+        var r = peek ? realIndex(i) : i;
+        dots.forEach(function (dot, di) { dot.classList.toggle('is-active', di === r); });
+        // Mark the centred slide so CSS can lift/brighten it and dim the rest.
+        slides.forEach(function (s, si) { s.classList.toggle('is-active', si === i); });
+      }
+      function layout(instant) {
+        if (!peek) return;
+        // Centre the active slide by translating the track. offsetLeft is the
+        // pre-transform layout position — exactly what we translate back out.
+        if (instant) track.style.transition = 'none';
+        var slide = slides[active];
+        var x = Math.round(root.clientWidth / 2 - (slide.offsetLeft + slide.offsetWidth / 2));
+        track.style.transform = 'translateX(' + x + 'px)';
+        if (instant) { void track.offsetWidth; track.style.transition = ''; }
+      }
+      function goTo(i) {
+        if (peek) {
+          setActive(i);
+          layout(false); // the CSS transition on the track animates the move
+          // Landed on a clone? Once the slide has animated in, snap silently to
+          // its identical twin in the middle copy so the ring never ends.
+          if (realCount > 1 && (i < realCount || i > 2 * realCount - 1)) {
+            var target = i;
+            window.setTimeout(function () {
+              if (active !== target) return; // a newer nav already moved us
+              setActive(realCount + realIndex(target));
+              layout(true);
+            }, reduceMotion ? 0 : TRANSITION_MS);
+          }
+          return;
+        }
+        // Scroll the track itself, not the slide via scrollIntoView() — that
+        // walks every scrollable ancestor including the window and yanked the
+        // whole page on autoplay. scrollBy on the overflow container only ever
+        // moves the track.
+        var clamped = Math.max(0, Math.min(slides.length - 1, i));
+        var slide = slides[clamped];
+        var delta = slide.getBoundingClientRect().left - track.getBoundingClientRect().left;
+        track.scrollBy({ left: delta, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+      function next() { goTo(peek ? active + 1 : (active + 1 >= slides.length ? 0 : active + 1)); }
+      function prev() { goTo(peek ? active - 1 : (active - 1 < 0 ? slides.length - 1 : active - 1)); }
+
+      if (prevBtn) prevBtn.addEventListener('click', prev);
+      if (nextBtn) nextBtn.addEventListener('click', next);
+      dots.forEach(function (dot, i) {
+        dot.addEventListener('click', function () { goTo(peek && realCount > 1 ? realCount + i : i); });
+      });
+
+      if (peek) {
+        // Clicking a dimmed neighbour brings it to the centre instead of
+        // following its link; the centred slide's link still works.
+        slides.forEach(function (s, i) {
+          s.addEventListener('click', function (e) {
+            if (i !== active) { e.preventDefault(); goTo(i); }
+          });
+        });
+        setActive(active);
+        layout(true);
+        window.addEventListener('load', function () { layout(true); });
+        var resizeT;
+        window.addEventListener('resize', function () {
+          window.clearTimeout(resizeT);
+          resizeT = window.setTimeout(function () { layout(true); }, 120);
+        });
+      } else {
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+                setActive(slides.indexOf(entry.target));
+              }
+            });
+          },
+          { root: track, threshold: 0.6 }
+        );
+        slides.forEach(function (slide) { io.observe(slide); });
+      }
+
+      /* Auto-rotate (opt-in via data-autoplay="ms"). Never runs under reduced
+         motion; pauses while the pointer is over the carousel, while focus is
+         inside it, and while the tab is hidden, so it never fights the reader
+         or a keyboard user. The peek carousel loops forever via the ring. */
+      var autoMs = parseInt(root.getAttribute('data-autoplay'), 10);
+      if (autoMs > 0 && !reduceMotion && realCount > 1) {
+        var timer = null;
+        var paused = false;
+        var tick = function () { if (!paused && !document.hidden) next(); };
+        var start = function () { if (!timer) timer = window.setInterval(tick, autoMs); };
+        var stop = function () { if (timer) { window.clearInterval(timer); timer = null; } };
+        root.addEventListener('mouseenter', function () { paused = true; });
+        root.addEventListener('mouseleave', function () { paused = false; });
+        root.addEventListener('focusin', function () { paused = true; });
+        root.addEventListener('focusout', function () { paused = false; });
+        document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+        start();
+      }
+    });
+  }
+
+  /* ==========================================================================
      Forms — mirrors components/forms.tsx (useFormFlow)
      Visual-only: validation, progress, honeypot and the shake/success/error
      states all run exactly as in the source app. There is no backend in this
@@ -978,8 +1125,98 @@
       var program = form.getAttribute('data-program');
       var data = {};
       new FormData(form).forEach(function (value, key) { data[key] = value; });
+
+      var modal = document.getElementById('payment-modal');
+      if (modal) {
+        openPaymentModal(modal, program, data);
+        return;
+      }
+      // No modal on this page (shouldn't happen on the current build, but
+      // keeps the standalone payment page reachable if it's ever linked to
+      // directly): fall back to the old hand-off.
       sessionStorage.setItem(REGISTER_STORAGE_PREFIX + program, JSON.stringify(data));
       window.location.href = 'programs-register-payment.html?program=' + encodeURIComponent(program);
+    });
+  }
+
+  /* -------------------------------------------------------------------------
+     Payment modal — same paymentConfirmForm() markup as the standalone
+     programs-register-payment.html, populated from the step-1 form data and
+     the selected program, then shown as a native <dialog>. Its own submit
+     handling (validation, progress, success state) is already wired by
+     initForms(), since the form inside it carries the same data-flow
+     attribute every other form on the site does.
+     ---------------------------------------------------------------------- */
+  function openPaymentModal(modal, programSlug, data) {
+    var prog = findProgram(programSlug);
+    var formEl = modal.querySelector('form');
+    if (!formEl) return;
+
+    Object.keys(data).forEach(function (key) {
+      var hidden = formEl.querySelector('input[name="' + key + '"]');
+      if (hidden) hidden.value = data[key];
+    });
+    var setSummary = function (key, value) {
+      var el = formEl.querySelector('[data-summary="' + key + '"]');
+      if (el) el.textContent = value;
+    };
+    // Registering / Parent rows only make sense when step-1 supplied a name;
+    // opened straight from "Register Now" they'd be empty, so hide them.
+    var toggleRow = function (key, show) {
+      var row = formEl.querySelector('[data-summary-row="' + key + '"]');
+      if (row) row.hidden = !show;
+    };
+    toggleRow('registering', !!data.studentName);
+    toggleRow('parent', !!data.parentName);
+    if (data.studentName) setSummary('registering', data.studentName + ' · ' + prog.gradeLabel);
+    if (data.parentName) setSummary('parent', data.parentName);
+    setSummary('course', prog.title);
+    setSummary('duration', prog.duration);
+
+    var setHidden = function (name, value) {
+      var el = formEl.querySelector('input[name="' + name + '"]');
+      if (el) el.value = value;
+    };
+    setHidden('grade', prog.gradeLabel);
+    setHidden('course', prog.title);
+    setHidden('programSlug', prog.slug);
+
+    var totalEl = formEl.querySelector('[data-pay-total]');
+    if (totalEl) totalEl.textContent = rupees(prog.amount);
+
+    var amountLabel = 'Confirm & pay ' + rupees(prog.amount);
+    var submitBtn = formEl.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.setAttribute('data-idle-label', amountLabel);
+      var rollIn = submitBtn.querySelector('.roll__in');
+      var rollOut = submitBtn.querySelector('.roll__out');
+      if (rollIn) rollIn.textContent = amountLabel;
+      if (rollOut) rollOut.textContent = amountLabel;
+    }
+
+    // A fresh attempt after a previous success in the same visit should not
+    // still show "Registration received" — reset to idle before reopening.
+    if (formEl.dataset.status === 'success') {
+      formEl.dataset.status = 'idle';
+      setButtonState(submitBtn, 'idle', { idle: amountLabel, busy: 'Submitting…', done: 'Registration received' });
+      readProgress(formEl);
+      var note = formEl.querySelector('.form-note[data-status-note]');
+      if (note) note.remove();
+    }
+
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+  }
+
+  function initPaymentModal() {
+    var modal = document.getElementById('payment-modal');
+    if (!modal) return;
+    var closeBtn = modal.querySelector('[data-modal-close]');
+    if (closeBtn) closeBtn.addEventListener('click', function () { modal.close(); });
+    // A click that lands on the dialog element itself (not inside the
+    // form-card panel it wraps) is a click on the backdrop.
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) modal.close();
     });
   }
 
@@ -1146,6 +1383,21 @@
     if (heroTitle) heroTitle.textContent = program.title;
     var heroBg = root.querySelector('[data-hero-bg] img');
     if (heroBg) { heroBg.src = program.image; heroBg.alt = 'Students in the ' + program.gradeLabel + ' age group'; }
+    var metaDuration = root.querySelector('[data-meta-duration]');
+    if (metaDuration) metaDuration.textContent = program.duration;
+    var metaLevel = root.querySelector('[data-meta-level]');
+    if (metaLevel) metaLevel.textContent = program.gradeLabel;
+
+    // The sidebar "Register Now" button opens the checkout modal directly,
+    // pre-filled with this program (no step-1 data needed — the modal collects
+    // name/email/card itself).
+    var payBtn = root.querySelector('[data-open-payment]');
+    if (payBtn) {
+      payBtn.addEventListener('click', function () {
+        var modal = document.getElementById('payment-modal');
+        if (modal) openPaymentModal(modal, program.slug, {});
+      });
+    }
 
     var outcomeEl = root.querySelector('[data-outcome]');
     if (outcomeEl) outcomeEl.innerHTML = dotListHtml(program.detail.outcome);
@@ -1252,7 +1504,9 @@
     initOfficeSelector();
     initBlogIndex();
     initStepper();
+    initCarousel();
     initForms();
+    initPaymentModal();
   });
 
   window.LodestarToast = Toast;

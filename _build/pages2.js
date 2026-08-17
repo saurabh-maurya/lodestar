@@ -57,7 +57,7 @@ function expertsPage() {
     const reversed = i % 2 === 1;
     const illustration = panelIllustrations[panel.slug];
     return section({ tone: i % 2 === 0 ? 'tint' : 'subtle', id: panel.slug }, `
-<div class="split expert-panel${reversed ? ' expert-panel--reverse' : ''}">
+<div class="split expert-panel reveal${reversed ? ' expert-panel--reverse' : ''}" data-reveal>
   ${illustration ? heroIllustration(illustration.src, illustration.alt) : ''}
   <div>
     <p class="overline">${panel.title}</p>
@@ -73,6 +73,7 @@ function expertsPage() {
     overline: 'Talk to an expert', title: 'Two kinds of guidance, one conversation away', mark: 'one conversation away',
     lead: 'A career expert has seen thousands of students choose a path. A student expert is living the result of one. Pick whichever answers the question you actually have.',
     aside: heroIllustration('images/illustrations/experts-hero.svg', 'An illustration of an expert giving advice over video'),
+    stats: [{ value: '50+', label: 'Verified experts' }, { value: '4.9', label: 'Average rating' }, { value: '1000+', label: 'Sessions conducted' }, { value: '30 min', label: 'Typical session length' }],
   }) +
     section({ tone: 'plain' }, `${sectionHeading({ overline: 'How it works', title: 'The same four steps, whichever you choose' })}<div class="mt-12">${howItWorksSteps(D.expertSteps, stepImages)}</div>`) +
     panels +
@@ -125,7 +126,10 @@ function forSchoolsPage() {
     card({ tone: 'clay' }, cardHeader(cardIcon(item.icon), null, cardEyebrow(item.n) + cardTitle(item.title)) + cardBody(item.body)),
     { delay: i * 90 }
   )).join('\n');
-  const phaseCards = phases.map(p => card({ tone: p.tone }, cardHeader(cardIcon(p.icon), null, cardEyebrow(p.pill) + cardTitle(p.title)) + checkList(p.items))).join('\n');
+  const phaseCards = phases.map((p, i) => reveal(
+    card({ tone: p.tone }, cardHeader(cardIcon(p.icon), null, cardEyebrow(p.pill) + cardTitle(p.title)) + checkList(p.items)),
+    { delay: i * 90 }
+  )).join('\n');
 
   return G.pageHero({
     overline: 'Institutional partnerships', title: 'Future-ready schools create future-ready students.', mark: 'future-ready students',
@@ -136,7 +140,7 @@ function forSchoolsPage() {
     children: `<p class="small mt-5" style="color:var(--ls-blue-400);font-weight:700">300+ schools already partner with Lodestar</p>`,
   }) +
     section({ tone: 'plain' }, `
-<div class="split split--copy-wide" style="align-items:center">
+<div class="split split--copy-wide reveal" data-reveal style="align-items:center">
   <div><p class="overline">Why schools need this</p><h2 class="h2 mt-4">The pressure on schools has changed.</h2></div>
   <p class="lead">Parents no longer measure schools by marks alone. They ask what happens after Class 10 — and they expect the school to have an answer.</p>
 </div>
@@ -146,8 +150,8 @@ ${sectionHeading({ overline: 'The Career Leaders Program', title: 'A 3-year jour
 <div class="grid grid--3 mt-12">${phaseCards}</div>`) +
     section({ tone: 'tint' }, `
 ${sectionHeading({ overline: 'The Lodestar advantage', title: 'Trusted by the schools you respect.' })}
-<div class="logo-row mt-12">${(G.partnerSchools || []).map(s => `<span>${s}</span>`).join('')}</div>
-<figure class="card card--raised mt-12">
+<div class="logo-row mt-12 reveal" data-reveal>${(G.partnerSchools || []).map(s => `<span>${s}</span>`).join('')}</div>
+<figure class="card card--raised mt-12 reveal" data-reveal style="--reveal-delay:120ms">
   <span class="quote-mark" aria-hidden="true">&rdquo;</span>
   <blockquote class="lead" style="color:var(--fg)">There has been definite positive feedback from parents on the programme. Lodestar has brought a level of clarity to career guidance our students had not experienced before.</blockquote>
   <figcaption class="flex items-center gap-4 mt-4">
@@ -156,7 +160,7 @@ ${sectionHeading({ overline: 'The Lodestar advantage', title: 'Trusted by the sc
   </figcaption>
 </figure>`) +
     section({ tone: 'plain', id: 'inquiry' }, `
-<div class="split split--form">
+<div class="split split--form reveal" data-reveal>
   <div>
     <p class="overline">Get started</p>
     <h2 class="h2 mt-4">Empower students for 21st-century careers.</h2>

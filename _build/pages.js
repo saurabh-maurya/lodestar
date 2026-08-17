@@ -3,7 +3,7 @@ const D = require('./data');
 const {
   ICON, cardIcon, roll, btn, arrowLink, section, sectionHeading, reveal, stat, statRow, media,
   heroIllustration, checkList, dotList, featureList, metaItem, cardValue, card, cardHeader, cardMedia,
-  cardEyebrow, cardTitle, cardBody, curriculumHtml, stars, quoteCard, accordion, site, offices, partnerSchools,
+  cardEyebrow, cardTitle, cardBody, cardMeta, badgeRow, curriculumHtml, stars, initialAvatar, quoteCard, accordion, site, offices, partnerSchools,
 } = G;
 
 /* ==========================================================================
@@ -70,7 +70,8 @@ function homePage() {
     const program = D.programs.find(p => p.slug === pick.slug);
     return reveal(card({ tone: 'clay' },
       cardMedia(program.grade, { icon: cardIcon(pick.icon), src: program.image, alt: `Students in the ${program.gradeLabel} age group` }) +
-      cardTitle(program.title) + cardBody(pick.blurb)
+      cardEyebrow(program.grade) +
+      cardTitle(program.title, { size: 'lg' }) + cardBody(pick.blurb)
     ), { delay: i * 90 });
   }).join('\n');
 
@@ -79,13 +80,22 @@ function homePage() {
     { delay: i * 90 }
   )).join('\n');
 
-  const schoolCards = D.schoolPhases.map((p, i) => reveal(
-    card({ tone: 'clay' }, cardHeader(cardIcon(p.icon), null, cardEyebrow(p.pill) + cardTitle(p.title)) + cardBody(p.body)),
-    { delay: i * 90 }
-  )).join('\n');
+  const segmentCards = D.audienceSegments.map((seg, i) => reveal(`<article class="segment">
+    <div class="segment__media"><img src="${seg.image}" alt="${seg.imageAlt}" loading="lazy"></div>
+    <div class="segment__body">
+      <div class="segment__head"><span class="segment__icon" aria-hidden="true">${cardIcon(seg.icon)}</span><div><h3 class="segment__title">${seg.label}</h3><p class="segment__tagline">${seg.tagline}</p></div></div>
+      <p class="segment__desc">${seg.desc}</p>
+      ${checkList(seg.offers)}
+      <div class="segment__logos">
+        <p class="segment__logos-label">Trusted by</p>
+        <div class="segment__logo-row">${seg.members.map(m => `<span class="segment__logo"><span class="segment__logo-mark" aria-hidden="true">${m.trim().charAt(0)}</span><span class="segment__logo-name">${m}</span></span>`).join('')}</div>
+      </div>
+      <p class="segment__cta">${arrowLink(seg.cta.href, seg.cta.label)}</p>
+    </div>
+  </article>`, { delay: i * 100 })).join('\n');
 
   const resourceGrid = D.resourceCards.map((c, i) => reveal(
-    card({ tone: 'clay', link: true }, cardMedia(c.tag, { icon: cardIcon(c.icon) }) + cardTitle(c.title, { href: c.href }) + cardBody(c.body)),
+    card({ tone: 'clay', link: true }, cardMedia(c.tag, { icon: cardIcon(c.icon) }) + cardTitle(c.title, { href: c.href }) + cardBody(c.body) + cardMeta(`<a class="card__cta" href="${c.href}">Explore${ICON.arrowRight}</a>`)),
     { delay: i * 80 }
   )).join('\n');
 
@@ -102,7 +112,7 @@ ${sectionHeading({ overline: 'How it works', title: 'Three sessions. One confide
 ${reveal(`${media('Counselling session in progress', { variant: 'tall', src: 'images/counselling-session.jpg', alt: 'A counsellor and a student in conversation' })}<div><h2 class="h2">Guesswork is expensive. We removed it.</h2><div class="mt-8">${featureList(D.whyLodestar)}</div></div>`, { className: 'split' })}`) +
 
     section({ tone: 'subtle' }, `
-<div class="flex flex-wrap items-center justify-between gap-6">
+<div class="flex flex-wrap items-center justify-between gap-6 reveal" data-reveal>
   <div><p class="overline">Our programs</p><h2 class="h2 mt-4">One program for wherever your child is right now</h2></div>
   ${arrowLink('programs.html', 'Explore all programs')}
 </div>
@@ -122,36 +132,17 @@ ${reveal(`<div class="split split--copy-wide" style="align-items:center">
 </div>`, { className: 'cta-panel' })}`) +
 
     section({ tone: 'plain' }, `
-${reveal(`<div>
-  <p class="overline">For schools &amp; institutions</p>
-  <h2 class="h2 mt-4">Future-ready schools create future-ready students</h2>
-</div>
-<div>
-  <p class="body">Parents no longer measure schools by marks alone — they ask what happens after Class 10, and they expect an answer. The Career Leaders Program embeds structured career guidance inside your school across Grades 8 to 12.</p>
-  <div class="flex flex-wrap items-center gap-6 mt-6">
-    ${btn('for-schools.html', 'Schedule a school consultation', { variant: 'navy' })}
-    ${arrowLink('for-schools.html#brochure', 'Download brochure')}
-  </div>
-</div>`, { className: 'split split--copy-wide' })}
-<div class="grid grid--3 mt-12">${schoolCards}</div>
-<div class="logo-row mt-12">${partnerSchools.map(s => `<span>${s}</span>`).join('')}</div>`) +
+${sectionHeading({ overline: 'Who we work with', title: 'Beyond the family: schools and institutions', lead: 'The same science, delivered two ways. Find the offer that describes you.' })}
+<div class="segments mt-14">${segmentCards}</div>`) +
 
     section({ tone: 'subtle', className: 'watermark-band watermark-band--right' }, `
-${reveal(`${media('Parent & child at home', { variant: 'tall', src: 'images/parent-child-home.jpg', alt: 'A parent helping their child study at home' })}<div>
-  <p class="overline">What parents say</p>
-  <h2 class="h2 mt-4">Hear what parents have to say</h2>
-  <div class="mt-6">${stars()}</div>
-  <blockquote class="body mt-5" style="color:var(--fg)">${D.featuredQuote.quote}</blockquote>
-  <div class="flex items-center gap-4 mt-6">
-    <span class="avatar" aria-hidden="true"></span>
-    <span><span style="display:block;font-weight:700">${D.featuredQuote.name}</span><span class="small">${D.featuredQuote.role}</span></span>
-  </div>
-  <p class="mt-6">${arrowLink('testimonials.html', 'Read all parent stories')}</p>
-</div>`, { className: 'split' })}
+${reveal(`<div class="text-center"><p class="overline">Parent stories</p><h2 class="h2 mt-4">Hear it from parents, in their words</h2><p class="lead mt-5 measure mx-auto" style="text-align:center">Short video stories from families who came through the same decision yours is facing now.</p></div>`)}
+<div class="carousel-wrap mt-12 reveal" data-reveal>${G.carousel(D.videoTestimonials, { label: 'Parent video stories', type: 'video', autoplay: 7000 })}</div>
+<p class="text-center mt-8 reveal" data-reveal>${arrowLink('testimonials.html#videos', 'Watch all parent stories')}</p>
 <p class="watermark" aria-hidden="true">PARENT VOICES</p>`) +
 
     section({ tone: 'plain' }, `
-<div class="flex flex-wrap items-center justify-between gap-6">
+<div class="flex flex-wrap items-center justify-between gap-6 reveal" data-reveal>
   <div><p class="overline">Resources</p><h2 class="h2 mt-4">Free tools before you commit to anything</h2></div>
   ${arrowLink('resources.html', 'View all resources')}
 </div>
@@ -182,18 +173,23 @@ function aboutPage() {
   return G.pageHero({
     overline: 'About Lodestar', title: 'Who is behind this — and can you trust them?', mark: 'can you trust them?',
     lead: 'The question every parent is actually asking. Company history and our expert bench, on one page instead of three.',
+    stats: [{ value: '2011', label: 'Founded' }, { value: '50+ yrs', label: 'Combined leadership experience' }, { value: '100+', label: 'Trained expert counsellors' }, { value: '60,000', label: 'Counselling sessions delivered' }],
   }) +
     section({ tone: 'plain' }, reveal(`<div>
   <h2 class="h2">Founded in 2011 by people who had already built India's education infrastructure</h2>
   <p class="body mt-6">Lodestar is India's first scientific career guidance program. It helps parents and children make a smart career decision using accurate data and evolved decision-making tools — exposure to 250+ career options, expert guidance from trained specialists, individual attention for every child, and a complete written career plan at the end.</p>
   <p class="body mt-5">The company was founded by education entrepreneurs and professionals with more than 50 years of combined experience running large institutions including Manipal Education, MeritTrac and Pearson. That background is why the program is built around measurement and research rather than intuition.</p>
 </div>${media('Students, in the classroom', { variant: 'wide', src: 'images/founders-campus.jpg' })}`, { className: 'split split--copy-wide' })) +
-    section({ tone: 'soft', tight: true }, `<div class="hero__stats" style="margin-top:0">${stats.map(s => stat(s.value, s.label, true)).join('')}</div>`) +
+    section({ tone: 'soft', tight: true }, `<div class="hero__stats reveal" data-reveal style="margin-top:0">${stats.map(s => stat(s.value, s.label, true)).join('')}</div>`) +
     section({ tone: 'plain', id: 'careers' }, `
-<p class="overline">Our experts</p>
-<h2 class="h2 mt-4">The people your child actually sits with</h2>
-<p class="body mt-5">Every counsellor on the bench has run at least a hundred individual sessions and is supported by the Lodestar platform's current data on careers, courses and colleges.</p>
-<div class="grid grid--4 mt-12">${teamCards}</div>`);
+${reveal(`<div>
+  <p class="overline">Our experts</p>
+  <h2 class="h2 mt-4">The people your child actually sits with</h2>
+  <p class="body mt-6">Every counsellor on the bench has run at least a hundred individual sessions and is supported by the Lodestar platform's current data on careers, courses and colleges.</p>
+  <p class="body mt-5">Behind each session sits a research team, education analysts and a quality team — the four groups below — so the advice your child hears is measured, current and checked.</p>
+  <p class="mt-8">${arrowLink('experts.html', 'Meet the expert bench')}</p>
+</div>${media('A Lodestar counselling session in progress', { variant: 'tall', src: 'images/counselling-session.jpg', alt: 'A counsellor guiding a student through their options' })}`, { className: 'split split--reverse' })}
+<div class="grid grid--4 mt-14">${teamCards}</div>`);
 }
 
 /* ==========================================================================
@@ -313,8 +309,9 @@ function contactPage() {
     lead: "Choose a city and only that office, its phone numbers and its counsellor availability appear — or leave your number and we will call you back, usually the same working day.",
     aside: heroIllustration('images/illustrations/contact-hero.svg', 'An illustration of a support representative ready to help'),
     tight: true,
+    stats: [{ value: '2', label: 'City offices' }, { value: '<1 day', label: 'Average response time' }, { value: '100+', label: 'Trained counsellors' }, { value: '40,000+', label: 'Parents guided' }],
   }) +
-    section({ tone: 'plain', id: 'contact' }, `<div class="split split--form">${officeSelector()}${callbackForm()}</div>`);
+    section({ tone: 'plain', id: 'contact' }, reveal(`${officeSelector()}${callbackForm()}`, { className: 'split split--form' }));
 }
 
 module.exports = { homePage, aboutPage, contactPage, honeypot, formProgress, inputField, labelledInput, selectField, chipRadios, submitBtn, PHONE_PATTERN, PHONE_INVALID, copyBtn };

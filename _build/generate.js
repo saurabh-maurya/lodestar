@@ -148,7 +148,7 @@ function section(opts, inner) {
 function sectionHeading(opts) {
   const centred = (opts.align || 'center') === 'center';
   const Tag = opts.as || 'h2';
-  return `<div${centred ? ' class="text-center"' : ''}>
+  return `<div class="reveal${centred ? ' text-center' : ''}" data-reveal>
   ${opts.overline ? `<p class="overline">${opts.overline}</p>` : ''}
   <${Tag} class="h2${opts.overline ? ' mt-4' : ''}">${opts.title}</${Tag}>
   ${opts.lead ? `<p class="lead mt-5 measure${centred ? ' mx-auto' : ''}"${centred ? ' style="text-align:center"' : ''}>${opts.lead}</p>` : ''}
@@ -220,6 +220,19 @@ function cardTitle(text, opts) {
 }
 function cardBody(text) { return `<p class="card__body">${text}</p>`; }
 function cardMeta(inner) { return `<div class="card__meta">${inner}</div>`; }
+
+/* A pill-style category/tag badge, and a row of them. Reused by program cards
+   (grade + focus), the schools/institutions grid and anywhere a card needs a
+   scannable category label that reads as a badge rather than a caption.
+   Pass a string for a plain badge, or { label, tone, icon } for a variant. */
+function badge(item) {
+  const o = typeof item === 'string' ? { label: item } : item;
+  const cls = ['badge', o.tone ? `badge--${o.tone}` : '', o.icon ? 'badge--icon' : ''].filter(Boolean).join(' ');
+  return `<span class="${cls}">${o.icon || ''}${o.label}</span>`;
+}
+function badgeRow(items) {
+  return `<div class="card__badges">${items.map(badge).join('')}</div>`;
+}
 
 function simpleCard(tone, iconKey, eyebrow, title, body, opts) {
   opts = opts || {};
@@ -340,8 +353,6 @@ function footer() {
       <p>© 2026 Lodestar. All Rights Reserved.</p>
       <div class="footer__legal">${legal}</div>
     </div>
-    <p class="footer__credits">Student photography: <a href="https://commons.wikimedia.org/wiki/File:Students_at_a_school_in_Bangalore,_India_learning_to_code_on_Progate.jpg" rel="noopener noreferrer nofollow">Nayakyashraj</a>, <a href="https://commons.wikimedia.org/wiki/File:A_picture_of_the_students_of_Srishti_College,_Bangalore_learning_about_the_history_of_Jakkur.jpg" rel="noopener noreferrer nofollow">Mythic Society Inscriptions 3D Scanning Project</a> and <a href="https://commons.wikimedia.org/wiki/File:Nichole_panel_discussion_with_Christ_students.jpg" rel="noopener noreferrer nofollow">Gopala Krishna A</a>, via Wikimedia Commons, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer nofollow">CC BY-SA 4.0</a>. Cropped from the originals.</p>
-    <p class="footer__credits">Illustrations by <a href="https://storyset.com" rel="noopener noreferrer nofollow">Storyset</a>.</p>
   </div>
 </footer>`;
 }
@@ -434,6 +445,50 @@ function quoteCard(opts) {
   </figcaption>
 </figure>`;
 }
+/* ==========================================================================
+   Testimonial carousel — a scroll-snap track of quote cards, one slide at a
+   time, with prev/next buttons and dot indicators. See initCarousel() in
+   site.js for the scroll-sync and hookup.
+   ========================================================================== */
+/* One video-story slide: a play-button poster that links through to the
+   testimonials page, with the quote and parent overlaid on a scrim. */
+function videoTestimonialCard(item) {
+  return `<div class="vtcard">
+  <a class="vtcard__media" href="testimonials.html#videos" aria-label="Watch ${item.name}'s video story">
+    <img src="${item.image}" alt="${item.alt || ''}" class="vtcard__img" loading="lazy">
+    <span class="vtcard__scrim" aria-hidden="true"></span>
+    <span class="vtcard__badge" aria-hidden="true">${ICON.video}Video story</span>
+    <span class="vtcard__play" aria-hidden="true"><span class="vtcard__play-ring">${ICON.play(20, 20)}</span></span>
+    <span class="vtcard__overlay">
+      <span class="vtcard__quote">${item.quote}</span>
+      <span class="vtcard__by"><strong>${item.name}</strong><span>${item.role}</span></span>
+    </span>
+  </a>
+</div>`;
+}
+
+function carousel(items, opts) {
+  opts = opts || {};
+  const variant = opts.variant || 'clay';
+  const slides = items.map((item, i) => {
+    const inner = opts.type === 'video'
+      ? videoTestimonialCard(item)
+      : quoteCard({ quote: item.quote, name: item.name, role: item.role, variant });
+    return `<div class="carousel__slide${i === 0 ? ' is-active' : ''}" data-carousel-slide role="group" aria-roledescription="slide" aria-label="${i + 1} of ${items.length}">${inner}</div>`;
+  }).join('');
+  const dots = items.map((_, i) => `<button type="button" class="carousel__dot${i === 0 ? ' is-active' : ''}" data-carousel-dot aria-label="Go to testimonial ${i + 1}"></button>`).join('');
+  const autoAttr = opts.autoplay ? ` data-autoplay="${opts.autoplay}"` : '';
+  const modClass = opts.type === 'video' ? ' carousel--video' : '';
+  return `<div class="carousel${modClass}" data-component="carousel"${autoAttr} aria-roledescription="carousel" aria-label="${opts.label || 'Testimonials'}">
+  <div class="carousel__track" data-carousel-track>${slides}</div>
+  <div class="carousel__controls">
+    <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="Previous testimonial">${ICON.arrowRight}</button>
+    <div class="carousel__dots" data-carousel-dots>${dots}</div>
+    <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="Next testimonial">${ICON.arrowRight}</button>
+  </div>
+</div>`;
+}
+
 function accordion(items, idPrefix) {
   const html = items.map((item, i) => {
     const isOpen = i === 0;
@@ -450,6 +505,6 @@ module.exports = {
   fs, path, OUT, ICON, cardIcon, site, primaryNav, footerNav, legalNav, offices, partnerSchools,
   roll, btn, arrowLink, section, sectionHeading, reveal, stat, statRow, media, heroIllustration,
   checkList, dotList, featureList, metaItem, cardValue, card, cardHeader, cardMedia, cardEyebrow,
-  cardTitle, cardBody, cardMeta, simpleCard, mediaCard, pageHero, header, footer, floatingCta, layout,
-  curriculumHtml, stars, initialAvatar, quoteCard, accordion,
+  cardTitle, cardBody, cardMeta, badge, badgeRow, simpleCard, mediaCard, pageHero, header, footer, floatingCta, layout,
+  curriculumHtml, stars, initialAvatar, quoteCard, carousel, accordion,
 };
