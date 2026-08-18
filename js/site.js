@@ -1170,8 +1170,12 @@
     toggleRow('parent', !!data.parentName);
     if (data.studentName) setSummary('registering', data.studentName + ' · ' + prog.gradeLabel);
     if (data.parentName) setSummary('parent', data.parentName);
+    setSummary('grade', prog.gradeLabel);
     setSummary('course', prog.title);
     setSummary('duration', prog.duration);
+
+    var nameEl = formEl.querySelector('[data-reg-program]');
+    if (nameEl) nameEl.textContent = prog.title;
 
     var setHidden = function (name, value) {
       var el = formEl.querySelector('input[name="' + name + '"]');
