@@ -1,0 +1,321 @@
+/* =====================================================
+   EXPERTS HERO
+===================================================== */
+
+.experts-hero-banner{
+
+    position:relative;
+    overflow:hidden;
+
+    width:100%;
+
+    background:#2F67B7;
+
+    min-height:300px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:70px 30px 90px;
+}
+
+/* decorative dots */
+
+.experts-hero-banner::before{
+
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background-image:
+        radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
+
+    background-size:34px 34px;
+
+    opacity:.25;
+}
+
+/* gradient */
+
+.experts-hero-banner::after{
+
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:
+    radial-gradient(circle at 15% 15%,rgba(255,255,255,.08),transparent 35%),
+    radial-gradient(circle at 85% 20%,rgba(255,255,255,.08),transparent 30%),
+    radial-gradient(circle at 50% 100%,rgba(255,255,255,.06),transparent 45%);
+}
+
+.experts-hero-banner__content{
+
+    position:relative;
+    z-index:5;
+
+    width:min(900px,90%);
+}
+
+
+.experts-hero-banner__tag{
+
+    color:#DCE8FF;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    letter-spacing:4px;
+
+    text-transform:uppercase;
+
+    margin-bottom:26px;
+
+    opacity:0;
+
+    transform:scale(.8);
+
+    animation:expertTagPopup .9s ease forwards;
+}
+
+@keyframes expertTagPopup{
+
+    0%{
+
+        opacity:0;
+        transform:scale(.8) translateY(20px);
+    }
+
+    70%{
+
+        transform:scale(1.05) translateY(-3px);
+    }
+
+    100%{
+
+        opacity:1;
+        transform:scale(1) translateY(0);
+    }
+
+}
+
+.experts-hero-banner__title{
+
+    margin:0;
+
+    font-size:72px;
+
+    font-weight:800;
+
+    line-height:1.05;
+
+    color:white;
+
+    letter-spacing:-2px;
+}
+
+.experts-hero-banner__line{
+
+    display:block;
+
+    opacity:0;
+
+    transform:translateX(-120px);
+
+    animation:expertHeadingSlide 1s ease forwards;
+}
+
+.experts-hero-banner__line:nth-child(2){
+
+    animation-delay:.35s;
+}
+
+@keyframes expertHeadingSlide{
+
+    from{
+
+        opacity:0;
+
+        transform:translateX(-120px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateX(0);
+    }
+
+}
+
+.experts-hero-banner__line--accent{
+
+    color:#D8E9FF;
+}
+
+.experts-hero-banner__description{
+
+    margin:30px auto 0;
+
+    max-width:760px;
+
+    color:rgba(255,255,255,.88);
+
+    font-size:22px;
+
+    line-height:1.8;
+}
+
+@keyframes expertsHeroSlide{
+
+    from{
+
+        opacity:0;
+
+        transform:translateX(-80px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateX(0);
+    }
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.experts-hero-stats{
+
+    background:white;
+
+    border-radius:26px;
+
+    margin:-55px auto 0;
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    overflow:hidden;
+
+    box-shadow:0 18px 60px rgba(0,0,0,.12);
+
+    position:relative;
+
+    z-index:20;
+}
+
+.experts-hero-stat{
+
+    padding:42px 20px;
+
+    text-align:center;
+
+    position:relative;
+}
+
+.experts-hero-stat:not(:last-child)::after{
+
+    content:"";
+
+    position:absolute;
+
+    right:0;
+
+    top:20%;
+
+    height:60%;
+
+    width:1px;
+
+    background:#E6EBF4;
+}
+
+.experts-hero-stat h2{
+
+    margin:0;
+
+    color:#2F67B7;
+
+    font-size:56px;
+
+    font-weight:800;
+}
+
+.experts-hero-stat p{
+
+    margin-top:12px;
+
+    font-size:19px;
+
+    color:#666;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:900px){
+
+.experts-hero-banner{
+
+    min-height:420px;
+
+    padding:60px 20px 90px;
+}
+
+.experts-hero-banner__title{
+
+    font-size:48px;
+}
+
+.experts-hero-banner__description{
+
+    font-size:18px;
+}
+
+.experts-hero-stats{
+
+    grid-template-columns:repeat(2,1fr);
+}
+
+.experts-hero-stat:nth-child(2)::after{
+
+    display:none;
+}
+
+}
+
+@media(max-width:640px){
+
+.experts-hero-banner__title{
+
+    font-size:36px;
+}
+
+.experts-hero-banner__description{
+
+    font-size:16px;
+}
+
+.experts-hero-stats{
+
+    grid-template-columns:1fr;
+}
+
+.experts-hero-stat::after{
+
+    display:none;
+}
+
+}
