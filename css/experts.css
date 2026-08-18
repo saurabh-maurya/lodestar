@@ -1,4 +1,29 @@
 /* =====================================================
+   CATEGORY PAGES — NAV OVER BLUE BANNER
+   The header pill is transparent before the reader scrolls, so on these
+   pages it floats over the blue banner. Dark nav text is unreadable there,
+   so lift it to white while un-scrolled; once scrolled the pill turns to
+   opaque clay again and the default dark text takes back over.
+   Scoped to data-page="experts-category" so only these two pages change.
+===================================================== */
+
+body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__link,
+body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__login,
+body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__menu-btn{
+    color:#fff;
+}
+
+body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__link:hover,
+body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__nav:not(:hover) .header__link[aria-current='page']{
+    color:#fff;
+}
+
+body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__login{
+    border-color:rgba(255,255,255,.5);
+}
+
+
+/* =====================================================
    EXPERTS HERO
 ===================================================== */
 
