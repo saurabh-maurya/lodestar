@@ -2351,7 +2351,9 @@
    reset the UA chrome and add the one entrance beat every other panel on
    this site gets. See openPaymentModal() in site.js. */
 .modal {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  margin: auto;
   border: 0;
   padding: 0;
   width: 100%;

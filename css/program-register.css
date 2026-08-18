@@ -1,0 +1,602 @@
+/* ==========================================================
+   PROGRAM REGISTER HERO
+========================================================== */
+
+.program-register-hero {
+    position: relative;
+    overflow: visible;
+    /* Slightly darker on the left, lighter on the right */
+    background: linear-gradient(110deg, #244F93 0%, #3B73C6 35%, #4B8CE0 100%);
+    text-align: left;
+    padding: 90px 20px 320px;
+}
+
+/* subtle pattern overlay to give texture without distracting */
+.program-register-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 18px 18px;
+    mix-blend-mode: overlay;
+    opacity: 0.6;
+}
+
+.program-register-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .08), transparent 30%),
+        radial-gradient(circle at 80% 10%, rgba(255, 255, 255, .08), transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(255, 255, 255, .05), transparent 40%);
+}
+
+.program-register-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(rgba(255, 255, 255, .15) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: .25;
+}
+
+.program-register-hero__content {
+    position: relative;
+    z-index: 2;
+    max-width: 950px;
+    margin: auto;
+}
+
+/* Two-column grid for hero: details on left, floating course card on right */
+.program-register-hero__grid {
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+}
+
+.program-register-hero__left {
+    color: #fff;
+    max-width:780px;
+}
+
+.program-register-hero__card {
+    margin-top: 30px;
+    position: relative;
+}
+
+/* Position the sidebar card to float visually inside the hero */
+.program-register-hero__card .course-card {
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 30px 80px rgba(15, 23, 42, .18);
+    transform: translateY(-6px);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.program-register-hero__card .course-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 38px 110px rgba(15, 23, 42, .22);
+}
+
+.program-register-hero__tag {
+
+    color: rgba(255, 255, 255, .85);
+
+    font-size: 18px;
+
+    letter-spacing: 4px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    margin-bottom: 24px;
+
+    opacity: 0;
+
+    transform: scale(.8);
+
+    animation: programHeroPopup .8s ease forwards;
+}
+
+.program-register-hero__title {
+
+    margin: 0;
+
+    color: #fff;
+
+    font-size: 72px;
+
+    font-weight: 800;
+
+    line-height: 1.08;
+
+    letter-spacing: -2px;
+
+    opacity: 0;
+
+    transform: translateX(-80px);
+
+    animation: programHeroSlide .9s ease forwards;
+
+    animation-delay: .2s;
+}
+
+.program-register-hero__description {
+
+    margin: 28px 0 0;
+
+    max-width: 760px;
+
+    color: rgba(255, 255, 255, .9);
+
+    font-size: 22px;
+
+    line-height: 1.7;
+
+    opacity: 0;
+
+    animation: programHeroFade .8s ease forwards;
+
+    animation-delay: .5s;
+}
+
+.program-register-meta {
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    gap: 34px;
+
+    flex-wrap: wrap;
+
+    margin-top: 36px;
+
+    color: rgba(255, 255, 255, .92);
+
+    font-size: 18px;
+
+    opacity: 0;
+
+    animation: programHeroFade .8s ease forwards;
+
+    animation-delay: .7s;
+}
+
+.program-register-meta strong {
+    color: #fff;
+}
+
+/* ==========================================================
+   FLOATING STATS
+========================================================== */
+
+.program-register-stats {
+    position: relative;
+    z-index: 5;
+    width: min(1350px, 92%);
+    margin: 65px auto -70px;
+    display: grid;
+    grid-template-columns: 1fr repeat(3, minmax(140px, 1fr));
+    background: #fff;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, .15);
+    align-items: center;
+}
+
+/* Premium strip styles */
+.program-register-premium {
+    width:100%;
+    position: relative;
+    z-index: 5;
+    /* Breathing room between the hero meta bar above and the premium strip. */
+    margin-top: 32px;
+}
+
+.program-register-premium__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 24px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+    border-radius: 18px;
+    background: #fff;
+
+    color: #111827;
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, .12);
+    /* Sit inside the reading column so the sidebar (390px + 48px gap) never
+       covers the right-hand stats. */
+    max-width: calc(100% - 390px - 48px);
+    margin: 0;
+}
+
+.premium-left {
+    color: #111827;
+}
+
+.premium-title {
+    margin: 0;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.premium-sub {
+    margin: 6px 0 0;
+    color: rgba(17, 24, 39, 0.72);
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+.premium-right {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    color: #111827;
+}
+
+.premium-stat {
+    background: rgba(15, 23, 42, 0.05);
+    padding: 10px 14px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.premium-stat--families {
+    text-align: center;
+}
+
+.program-register-stat {
+
+    text-align: center;
+
+    padding: 42px 20px;
+
+    position: relative;
+}
+
+.program-register-stat:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 22%;
+    width: 1px;
+    height: 56%;
+    background: #E7ECF4;
+}
+
+.program-register-stat h2 {
+
+    margin: 0;
+
+    color: #2F67B7;
+
+    font-size: 58px;
+
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+.program-register-stat p {
+
+    margin-top: 14px;
+
+    color: #61697A;
+
+    font-size: 18px;
+
+    font-weight: 500;
+}
+
+/* ==========================================================
+   SIDEBAR CARD
+========================================================== */
+
+.program-register-layout{
+    /* Match the shared .container so the strip aligns with the reading column
+       below and never slips under the sticky sidebar on the right. */
+    width: 100%;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding-inline: var(--space-6);
+}
+
+.course-card {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    min-height: 0;
+}
+
+
+.program-register-sidebar {
+
+    border-radius: 22px;
+
+    /* allow the card to scroll internally when viewport is short */
+    display:flex;
+    flex-direction:column;
+
+    height: calc(100vh - 90px);
+    max-height: 820px;
+
+    overflow:hidden;
+    -webkit-overflow-scrolling: touch;
+
+    background: #fff;
+
+    box-shadow:
+        0 28px 60px rgba(15, 23, 42, .16);
+
+    transition: .35s;
+
+    width:390px;
+    justify-self:end;
+    align-self:start;
+
+    /* Pull the card up so it visually overlaps the blue hero banner.
+       Its containing block is .course (the whole reading grid), so
+       position:sticky can hold it in view all the way to the register form. */
+    margin-top:-940px;
+
+    /* .course__sidebar sets position:sticky; top offset lives there too */
+}
+
+.course-card__scroll{
+    display:flex;
+    flex-direction:column;
+
+    flex:1;
+
+    min-height:0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+.course-card__body{
+    flex-shrink:0;
+}
+
+.course-card__footer{
+
+    flex:0 0 auto;
+
+    background:#fff;
+
+    border-top:1px solid #ececec;
+
+    padding:18px 24px;
+
+    position:relative;
+
+    z-index:2;
+    flex-shrink: 0;
+}
+
+.program-register-sidebar .course-card:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 38px 70px rgba(15, 23, 42, .22);
+}
+
+/* ==========================================================
+   IMAGE
+========================================================== */
+
+.program-register-thumb {
+
+    flex-shrink:0;
+
+    height:300px;
+}
+
+.program-register-thumb img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: .45s;
+}
+
+.course__sidebar--hero {
+
+    width: 380px;
+
+}
+
+.program-register-sidebar .course-card:hover .program-register-thumb img {
+
+    transform: scale(1.06);
+}
+
+/* ==========================================================
+   BUTTON
+========================================================== */
+
+.program-register-sidebar .btn {
+
+    width: 100%;
+
+    height: 62px;
+
+    border-radius: 999px;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+/* ==========================================================
+   CONTENT SPACING
+========================================================== */
+
+.course{
+    /* Restore the shared course grid so the sticky sidebar (moved back into
+       this container) has the full reading column height to stick against. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 390px;
+    gap: 48px;
+    align-items: start;
+    margin-top: 0;
+}
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes programHeroPopup {
+
+    from {
+
+        opacity: 0;
+
+        transform: scale(.8) translateY(20px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: scale(1);
+    }
+}
+
+@keyframes programHeroSlide {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateX(-80px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateX(0);
+    }
+}
+
+@keyframes programHeroFade {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(20px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width:1100px) {
+
+    .program-register-hero__grid {
+        grid-template-columns: 1fr 320px;
+        max-width: 760px;
+        margin: 0;
+    }
+
+    .program-register-hero__title {
+        font-size: 56px;
+    }
+
+    .program-register-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+}
+
+@media (max-width: 900px) {
+    /* Below the shared course-grid breakpoint the sidebar drops under the
+       reading column, so the fixed height and overlap trick from desktop
+       become blockers rather than helpers. */
+    .course {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .program-register-sidebar {
+        width: auto;
+        height: auto;
+        max-height: none;
+        margin-top: 0;
+        overflow: visible;
+        display: block;
+    }
+
+    .program-register-sidebar .course-card,
+    .program-register-sidebar .course-card__scroll {
+        display: block;
+        height: auto;
+        overflow: visible;
+    }
+
+    .program-register-thumb {
+        height: auto;
+        aspect-ratio: 16 / 10;
+    }
+}
+
+@media (max-width: 780px) {
+    .program-register-hero {
+        padding: 90px 20px 280px;
+        min-height: 520px;
+    }
+
+
+    .program-register-hero__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .program-register-hero__title {
+        font-size: 40px;
+    }
+
+    .program-register-hero__card {
+        margin-top: 24px;
+    }
+
+    .program-register-stats {
+        grid-template-columns: 1fr;
+        margin-top: 40px;
+    }
+
+    .program-register-stat::after {
+        display: none;
+    }
+
+    .program-register-thumb {
+        height: 260px;
+    }
+}
