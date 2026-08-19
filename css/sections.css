@@ -1718,84 +1718,215 @@
   gap: var(--space-2);
 }
 
-/* --- How-it-works stepper -------------------------------------------------
-   The rail above the "How it works" cards on /experts. A bare line by
-   default; `.steps__fill` grows across it as the active step advances, and
-   the node it reaches gets a ring + pulse, in step with the card below it
-   lifting. See components/how-it-works-steps.tsx for why the fill remounts
-   (rather than tweens backward) every time the cycle loops to step one.
+/* --- How-it-works journey (.hiw) -----------------------------------------
+   The connected 4-step timeline on /experts: Select -> Book -> Connect ->
+   Resolve. A bare rail links the markers; `.hiw__rail-fill` grows along it
+   as the active step advances and a glowing `.hiw__particle` rides its
+   leading edge, while the marker it reaches lifts, glows and pulses. The
+   rail's geometry (which axis, where it starts/ends) is measured in JS from
+   the marker centres, so the same markup reads horizontally on desktop and
+   vertically on mobile — see initStepper() in js/site.js. The fill snaps back
+   to 0 instantly when the cycle loops, so it always grows forward, never
+   sweeps backward. Fully scoped to .hiw; static content stays readable with
+   no JS and under prefers-reduced-motion.
    ---------------------------------------------------------------------- */
-.steps__track {
+.hiw {
+  --hiw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hiw-progress: 0;
+  --hiw-marker: 4rem;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 1.75rem;
-  margin: 0 0.4375rem var(--space-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
 }
-.steps__track::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  background: var(--border);
-  transform: translateY(-50%);
-  border-radius: var(--radius-pill);
-}
-.steps__fill {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  height: 2px;
-  background: var(--accent);
-  transform: translateY(-50%);
-  border-radius: var(--radius-pill);
-  transition: width 900ms var(--ease-out-long);
-}
-.steps__node {
+.hiw__step {
   position: relative;
   z-index: 1;
-  width: 0.875rem;
-  height: 0.875rem;
-  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  transition: transform 500ms var(--hiw-ease);
+}
+.hiw__marker {
+  position: relative;
+  width: var(--hiw-marker);
+  height: var(--hiw-marker);
+  display: grid;
+  place-items: center;
   border-radius: 50%;
   background: var(--surface);
   border: 2px solid var(--border);
-  transition: background var(--duration) var(--ease),
-    border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+  color: var(--fg-muted);
+  box-shadow: var(--shadow-sm);
+  transition: transform 600ms var(--hiw-ease), background 500ms var(--hiw-ease),
+    border-color 500ms var(--hiw-ease), color 500ms var(--hiw-ease),
+    box-shadow 500ms var(--hiw-ease);
 }
-.steps__node.is-passed {
+.hiw__icon svg {
+  display: block;
+  width: 1.625rem;
+  height: 1.625rem;
+  transition: transform 600ms var(--hiw-ease);
+}
+.hiw__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hiw__index {
+  font-size: var(--text-overline);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--fg-muted);
+  transition: color 450ms var(--hiw-ease);
+}
+.hiw__title {
+  margin-top: var(--space-1, 0.25rem);
+  font-size: var(--text-xl);
+  font-weight: 650;
+  line-height: 1.2;
+  color: var(--fg);
+}
+.hiw__desc {
+  margin-top: var(--space-2);
+  max-width: 24ch;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--fg-muted);
+}
+
+/* Passed + active states — driven by .is-passed / .is-active from the JS. */
+.hiw__step.is-passed .hiw__marker {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  color: var(--accent);
+}
+.hiw__step.is-passed .hiw__index {
+  color: var(--accent);
+}
+.hiw__step.is-active .hiw__marker {
+  transform: scale(1.08);
   background: var(--accent);
   border-color: var(--accent);
+  color: var(--accent-fg);
+  animation: hiw-pulse 2.2s ease-in-out infinite;
 }
-.steps__node.is-active {
-  transform: scale(1.35);
-  animation: steps-pulse 1.8s ease-in-out infinite;
+.hiw__step.is-active .hiw__icon svg {
+  transform: scale(1.12);
 }
-@keyframes steps-pulse {
+.hiw__step.is-active .hiw__title {
+  color: var(--fg);
+  font-weight: 700;
+}
+@keyframes hiw-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 24%, transparent);
+    box-shadow: var(--shadow-lg), 0 0 0 5px color-mix(in srgb, var(--accent) 16%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow: var(--shadow-lg), 0 0 0 11px color-mix(in srgb, var(--accent) 5%, transparent);
   }
 }
-.step-card {
-  transition: transform 500ms var(--ease-out-long), box-shadow 500ms var(--ease-out-long);
+
+/* The rail: an absolutely-positioned line (so it never claims a grid cell);
+   JS sets its left/top/width/height from the real marker centres. */
+.hiw__rail {
+  position: absolute;
+  z-index: 0;
+  background: var(--border);
+  border-radius: var(--radius-pill);
+  pointer-events: none;
 }
-.step-card.is-active {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg), 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
+.hiw__rail-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--hiw-progress) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 65%, var(--surface)),
+    var(--accent)
+  );
+  transition: width 900ms var(--hiw-ease);
 }
+.hiw__particle {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--hiw-progress) * 100%);
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 12px 3px color-mix(in srgb, var(--accent) 45%, transparent);
+  transition: left 900ms var(--hiw-ease), top 900ms var(--hiw-ease);
+}
+
+/* Desktop hover — a small, calm lift on the whole step. */
+@media (hover: hover) and (min-width: 769px) {
+  .hiw__step:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* Mobile: the timeline turns vertical — markers on a left rail, copy beside. */
+@media (max-width: 768px) {
+  .hiw {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  .hiw__step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--space-5);
+  }
+  .hiw__marker {
+    --hiw-marker: 3.25rem;
+    flex: none;
+  }
+  .hiw__icon svg {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+  .hiw__content {
+    align-items: flex-start;
+    padding-top: 0.25rem;
+  }
+  .hiw__desc {
+    max-width: 40ch;
+  }
+  .hiw__rail-fill {
+    width: 100%;
+    height: calc(var(--hiw-progress) * 100%);
+    transition: height 900ms var(--hiw-ease);
+  }
+  .hiw__particle {
+    left: 50%;
+    top: calc(var(--hiw-progress) * 100%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .steps__fill,
-  .steps__node,
-  .step-card {
+  .hiw__step,
+  .hiw__marker,
+  .hiw__icon svg,
+  .hiw__index,
+  .hiw__title,
+  .hiw__rail-fill,
+  .hiw__particle {
     transition: none;
     animation: none;
+  }
+  .hiw__particle {
+    display: none;
   }
 }
 

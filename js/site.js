@@ -695,59 +695,127 @@
   }
 
   /* ==========================================================================
-     How-it-works stepper — mirrors components/how-it-works-steps.tsx
+     How-it-works journey (.hiw) — the Select -> Book -> Connect -> Resolve
+     timeline on /experts. The rail's geometry is measured from the live
+     marker centres, so one markup animates horizontally on desktop and
+     vertically on mobile. Progress is one CSS var (--hiw-progress, 0..1); the
+     fill + particle read from it, easing set in CSS. Scroll-gated by an
+     IntersectionObserver, and it holds a calm, complete state under
+     prefers-reduced-motion instead of cycling.
      ========================================================================== */
   function initStepper() {
-    var wrap = document.querySelector('[data-component="how-it-works-steps"]');
+    var wrap = document.querySelector('[data-component="how-it-works-journey"]');
     if (!wrap) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var track = wrap.querySelector('.steps__track');
-    var fill = wrap.querySelector('.steps__fill');
-    var nodes = Array.prototype.slice.call(wrap.querySelectorAll('.steps__node'));
-    var cards = Array.prototype.slice.call(wrap.querySelectorAll('.step-card'));
-    var total = nodes.length;
+    var rail = wrap.querySelector('.hiw__rail');
+    var fill = wrap.querySelector('.hiw__rail-fill');
+    var particle = wrap.querySelector('.hiw__particle');
+    var steps = Array.prototype.slice.call(wrap.querySelectorAll('.hiw__step'));
+    var markers = steps.map(function (s) { return s.querySelector('.hiw__marker'); });
+    var total = steps.length;
+    if (!rail || total < 2) return;
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var mobile = window.matchMedia('(max-width: 768px)');
+
+    // Anchor the rail exactly between the first and last marker centres, on
+    // whichever axis the current layout uses.
+    function layout() {
+      var vertical = mobile.matches;
+      wrap.setAttribute('data-orientation', vertical ? 'v' : 'h');
+      var box = wrap.getBoundingClientRect();
+      var a = markers[0].getBoundingClientRect();
+      var b = markers[total - 1].getBoundingClientRect();
+      if (vertical) {
+        var x = a.left - box.left + a.width / 2;
+        var y0 = a.top - box.top + a.height / 2;
+        var y1 = b.top - box.top + b.height / 2;
+        rail.style.left = x + 'px';
+        rail.style.top = y0 + 'px';
+        rail.style.width = '2px';
+        rail.style.height = Math.max(0, y1 - y0) + 'px';
+        rail.style.transform = 'translateX(-50%)';
+      } else {
+        var cy = a.top - box.top + a.height / 2;
+        var x0 = a.left - box.left + a.width / 2;
+        var x1 = b.left - box.left + b.width / 2;
+        rail.style.top = cy + 'px';
+        rail.style.left = x0 + 'px';
+        rail.style.height = '2px';
+        rail.style.width = Math.max(0, x1 - x0) + 'px';
+        rail.style.transform = 'translateY(-50%)';
+      }
+    }
+
     var active = 0;
-    var STEP_DURATION = 2600;
-    var timer;
-
     function paint() {
-      fill.style.width = (active / (total - 1)) * 100 + '%';
-      nodes.forEach(function (node, i) {
-        node.classList.toggle('is-passed', i <= active);
-        node.classList.toggle('is-active', i === active);
+      wrap.style.setProperty('--hiw-progress', active / (total - 1));
+      steps.forEach(function (s, i) {
+        s.classList.toggle('is-passed', i <= active);
+        s.classList.toggle('is-active', i === active);
+        s.setAttribute('aria-current', i === active ? 'step' : 'false');
       });
-      cards.forEach(function (card, i) {
-        card.classList.toggle('is-active', i === active);
-      });
+    }
+
+    // Reduced motion: skip the cycle, hold a settled, fully-progressed state.
+    if (reduce.matches) {
+      layout();
+      steps.forEach(function (s) { s.classList.add('is-passed'); });
+      wrap.style.setProperty('--hiw-progress', 1);
+      window.addEventListener('resize', debounceLayout(layout));
+      return;
     }
 
     function advance() {
       active = (active + 1) % total;
       if (active === 0) {
-        // Remount the fill so it always grows forward from 0, never sweeps back.
-        fill.style.transition = 'none';
-        fill.style.width = '0%';
-        void fill.offsetWidth;
-        fill.style.transition = '';
+        // Snap the fill + particle back to the start so they always travel
+        // forward, never sweep backward on the loop.
+        var stash = [fill, particle].map(function (el) {
+          if (!el) return null;
+          var prev = el.style.transition;
+          el.style.transition = 'none';
+          return prev;
+        });
+        wrap.style.setProperty('--hiw-progress', 0);
+        void wrap.offsetWidth;
+        [fill, particle].forEach(function (el, i) {
+          if (el) el.style.transition = stash[i] || '';
+        });
       }
       paint();
     }
 
+    var timer;
+    var STEP_DURATION = 2200; // ~900ms travel + a short settle before the next
     var io = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            timer = window.setInterval(advance, STEP_DURATION);
+            layout(); // re-measure now that it's on screen (post-reveal)
+            if (!timer) timer = window.setInterval(advance, STEP_DURATION);
           } else if (timer) {
             window.clearInterval(timer);
+            timer = null;
           }
         });
       },
-      { threshold: 0.4 }
+      { threshold: 0.35 }
     );
-    io.observe(wrap);
+
+    layout();
     paint();
+    io.observe(wrap);
+    window.addEventListener('resize', debounceLayout(layout));
+  }
+
+  // rAF-debounced wrapper so resize re-measurement doesn't thrash layout.
+  function debounceLayout(fn) {
+    var raf;
+    return function () {
+      window.cancelAnimationFrame(raf);
+      raf = window.requestAnimationFrame(fn);
+    };
   }
 
   /* ==========================================================================

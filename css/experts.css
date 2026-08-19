@@ -309,8 +309,10 @@ body[data-page="experts-category"] .experts-hero-banner{
 ===================================================== */
 
 body[data-page="experts"] .experts-hero-banner{
-    background:#fff;
-    padding-bottom:40px;
+    background:#e9f1fc;
+    /* Extra bottom room so the stats card can sit half inside the banner
+       without colliding with the hero copy above it. */
+    padding-bottom:86px;
 }
 
 /* Faint blue dots + glow instead of the white-on-blue texture. */
@@ -409,8 +411,9 @@ body[data-page="experts"] .experts-hero-banner__title--boxed .experts-hero-banne
 body[data-page="experts"] .experts-hero-stats{
     background:#2F67B7;
     max-width:760px;
-    /* Sits clearly below the banner copy (positive gap, no overlap). */
-    margin-top:14px;
+    /* Overlap the banner's lower edge so the card reads as half inside the
+       light-blue banner and half on the white page below it. */
+    margin-top:-55px;
 }
 body[data-page="experts"] .experts-hero-stat{
     padding:24px 16px;
