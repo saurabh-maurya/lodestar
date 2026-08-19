@@ -1790,7 +1790,15 @@ main [id] {
    margin (not flex `gap`) so the two halves line up exactly. Hovering the
    strip pauses the scroll; hovering a chip brings it back to full colour. */
 .logo-marquee {
-  overflow: hidden;
+  /* `clip` + a vertical clip-margin lets a chip's hover lift and shadow bleed
+     above/below the strip without being cut off, while the horizontal scroll
+     stays clipped (and masked) at the sides. Falls back to hidden-like clipping
+     where clip-margin is unsupported. */
+  overflow: clip;
+  overflow-clip-margin: var(--space-4);
+  /* Breathing room above (and below) the chips so the strip doesn't sit tight
+     against the heading, and the hover lift has clear space. */
+  padding-block: var(--space-4);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
