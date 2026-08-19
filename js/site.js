@@ -1184,9 +1184,9 @@
       var data = {};
       new FormData(form).forEach(function (value, key) { data[key] = value; });
 
-      var modal = document.getElementById('payment-modal');
+      var modal = document.getElementById('register-modal');
       if (modal) {
-        openPaymentModal(modal, program, data);
+        openRegisterModal(modal, program);
         return;
       }
       // No modal on this page (shouldn't happen on the current build, but
@@ -1205,35 +1205,17 @@
      initForms(), since the form inside it carries the same data-flow
      attribute every other form on the site does.
      ---------------------------------------------------------------------- */
-  function openPaymentModal(modal, programSlug, data) {
+  function openRegisterModal(modal, programSlug) {
     var prog = findProgram(programSlug);
     var formEl = modal.querySelector('form');
     if (!formEl) return;
 
-    Object.keys(data).forEach(function (key) {
-      var hidden = formEl.querySelector('input[name="' + key + '"]');
-      if (hidden) hidden.value = data[key];
-    });
     var setSummary = function (key, value) {
       var el = formEl.querySelector('[data-summary="' + key + '"]');
       if (el) el.textContent = value;
     };
-    // Registering / Parent rows only make sense when step-1 supplied a name;
-    // opened straight from "Register Now" they'd be empty, so hide them.
-    var toggleRow = function (key, show) {
-      var row = formEl.querySelector('[data-summary-row="' + key + '"]');
-      if (row) row.hidden = !show;
-    };
-    toggleRow('registering', !!data.studentName);
-    toggleRow('parent', !!data.parentName);
-    if (data.studentName) setSummary('registering', data.studentName + ' · ' + prog.gradeLabel);
-    if (data.parentName) setSummary('parent', data.parentName);
     setSummary('grade', prog.gradeLabel);
     setSummary('course', prog.title);
-    setSummary('duration', prog.duration);
-
-    var nameEl = formEl.querySelector('[data-reg-program]');
-    if (nameEl) nameEl.textContent = prog.title;
 
     var setHidden = function (name, value) {
       var el = formEl.querySelector('input[name="' + name + '"]');
@@ -1246,32 +1228,27 @@
     var totalEl = formEl.querySelector('[data-pay-total]');
     if (totalEl) totalEl.textContent = rupees(prog.amount);
 
-    var amountLabel = 'Confirm & pay ' + rupees(prog.amount);
+    var labels = { idle: 'Submit', busy: 'Submitting…', done: 'Registration received' };
     var submitBtn = formEl.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.setAttribute('data-idle-label', amountLabel);
-      var rollIn = submitBtn.querySelector('.roll__in');
-      var rollOut = submitBtn.querySelector('.roll__out');
-      if (rollIn) rollIn.textContent = amountLabel;
-      if (rollOut) rollOut.textContent = amountLabel;
-    }
 
     // A fresh attempt after a previous success in the same visit should not
     // still show "Registration received" — reset to idle before reopening.
     if (formEl.dataset.status === 'success') {
       formEl.dataset.status = 'idle';
-      setButtonState(submitBtn, 'idle', { idle: amountLabel, busy: 'Submitting…', done: 'Registration received' });
-      readProgress(formEl);
+      setButtonState(submitBtn, 'idle', labels);
       var note = formEl.querySelector('.form-note[data-status-note]');
       if (note) note.remove();
     }
+    readProgress(formEl);
 
     if (typeof modal.showModal === 'function') modal.showModal();
     else modal.setAttribute('open', '');
+    var firstInput = formEl.querySelector('input:not([type="hidden"]), select');
+    if (firstInput) { try { firstInput.focus(); } catch (e) {} }
   }
 
-  function initPaymentModal() {
-    var modal = document.getElementById('payment-modal');
+  function initRegisterModal() {
+    var modal = document.getElementById('register-modal');
     if (!modal) return;
     var closeBtn = modal.querySelector('[data-modal-close]');
     if (closeBtn) closeBtn.addEventListener('click', function () { modal.close(); });
@@ -1443,6 +1420,8 @@
     var heroTitle = root.querySelector('[data-hero-title]');
     if (heroOverline) heroOverline.textContent = 'Programs · ' + program.gradeLabel;
     if (heroTitle) heroTitle.textContent = program.title;
+    var heroGrade = root.querySelector('[data-hero-grade]');
+    if (heroGrade) heroGrade.textContent = program.gradeLabel;
     var heroBg = root.querySelector('[data-hero-bg] img');
     if (heroBg) { heroBg.src = program.image; heroBg.alt = 'Students in the ' + program.gradeLabel + ' age group'; }
     var metaDuration = root.querySelector('[data-meta-duration]');
@@ -1456,8 +1435,8 @@
     var payBtn = root.querySelector('[data-open-payment]');
     if (payBtn) {
       payBtn.addEventListener('click', function () {
-        var modal = document.getElementById('payment-modal');
-        if (modal) openPaymentModal(modal, program.slug, {});
+        var modal = document.getElementById('register-modal');
+        if (modal) openRegisterModal(modal, program.slug);
       });
     }
 
@@ -1569,7 +1548,7 @@
     initCarousel();
     initQuoteLoop();
     initForms();
-    initPaymentModal();
+    initRegisterModal();
   });
 
   window.LodestarToast = Toast;

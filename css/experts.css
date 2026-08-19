@@ -4,7 +4,8 @@
    pages it floats over the blue banner. Dark nav text is unreadable there,
    so lift it to white while un-scrolled; once scrolled the pill turns to
    opaque clay again and the default dark text takes back over.
-   Scoped to data-page="experts-category" so only these two pages change.
+   Scoped to data-page="experts-category" — the expert hub ("experts") opens
+   with a white banner instead, so it keeps the default dark nav.
 ===================================================== */
 
 body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__link,
@@ -22,6 +23,11 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
     border-color:rgba(255,255,255,.5);
 }
 
+/* Category banners run a deeper blue than the brand #2F67B7 for more presence. */
+body[data-page="experts-category"] .experts-hero-banner{
+    background:#1E4482;
+}
+
 
 /* =====================================================
    EXPERTS HERO
@@ -36,15 +42,15 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 
     background:#2F67B7;
 
-    min-height:300px;
+    /* Content flows straight after the top padding — no flex centering or
+       min-height, both of which were padding the banner out with dead space. */
+    text-align:left;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-
-    padding:70px 30px 90px;
+    /* Top padding clears the fixed nav pill; the copy is left-aligned and the
+       pill is centred, so it only needs to sit below the pill, not far below.
+       Horizontal gutter is handled by __content so the copy lines up with the
+       page container below. */
+    padding:78px 0 34px;
 }
 
 /* decorative dots */
@@ -84,7 +90,12 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
     position:relative;
     z-index:5;
 
-    width:min(900px,90%);
+    /* Mirror the site .container so the banner copy aligns with the cards and
+       stats below it, rather than floating dead-centre. */
+    width:100%;
+    max-width:var(--container);
+    margin-inline:auto;
+    padding-inline:var(--space-6);
 }
 
 
@@ -92,15 +103,15 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 
     color:#DCE8FF;
 
-    font-size:18px;
+    font-size:13px;
 
     font-weight:700;
 
-    letter-spacing:4px;
+    letter-spacing:2.5px;
 
     text-transform:uppercase;
 
-    margin-bottom:26px;
+    margin-bottom:16px;
 
     opacity:0;
 
@@ -134,20 +145,24 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 
     margin:0;
 
-    font-size:72px;
+    /* Matches the site's .h1 scale (caps at 48px) so the banner reads as a
+       page heading, not an oversized outlier. */
+    font-size:clamp(2.125rem, 1.1rem + 3.6vw, 3rem);
 
     font-weight:800;
 
-    line-height:1.05;
+    line-height:1.1;
 
     color:white;
 
-    letter-spacing:-2px;
+    letter-spacing:-0.015em;
 }
 
 .experts-hero-banner__line{
 
-    display:block;
+    /* inline-block keeps the two words on one line while still allowing the
+       slide-in transform (a plain inline span would ignore it). */
+    display:inline-block;
 
     opacity:0;
 
@@ -186,15 +201,15 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 
 .experts-hero-banner__description{
 
-    margin:30px auto 0;
+    margin:18px 0 0;
 
-    max-width:760px;
+    max-width:680px;
 
     color:rgba(255,255,255,.88);
 
-    font-size:22px;
+    font-size:17px;
 
-    line-height:1.8;
+    line-height:1.6;
 }
 
 @keyframes expertsHeroSlide{
@@ -287,6 +302,162 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 }
 
 /* =====================================================
+   EXPERT HUB (experts.html) — INVERTED PALETTE
+   The hub opens on a white banner with a compact blue stats card, the
+   reverse of the category pages' blue banner + white card. Scoped to
+   data-page="experts" so only the hub flips.
+===================================================== */
+
+body[data-page="experts"] .experts-hero-banner{
+    background:#fff;
+    padding-bottom:40px;
+}
+
+/* Faint blue dots + glow instead of the white-on-blue texture. */
+body[data-page="experts"] .experts-hero-banner::before{
+    background-image:radial-gradient(rgba(47,103,183,.12) 1px, transparent 1px);
+    opacity:.6;
+}
+body[data-page="experts"] .experts-hero-banner::after{
+    background:
+        radial-gradient(circle at 15% 15%,rgba(47,103,183,.06),transparent 35%),
+        radial-gradient(circle at 85% 20%,rgba(47,103,183,.06),transparent 30%);
+}
+
+/* The label is now the hero's headline on the left, so it goes large. */
+body[data-page="experts"] .experts-hero-banner__tag{
+    color:#2F67B7;
+    font-size:clamp(1.9rem, 1rem + 3vw, 3rem);
+    letter-spacing:1px;
+    line-height:1.05;
+    margin-bottom:14px;
+}
+body[data-page="experts"] .experts-hero-banner__title{
+    color:var(--fg, #16233a);
+}
+body[data-page="experts"] .experts-hero-banner__line--accent{
+    color:#2F67B7;
+}
+body[data-page="experts"] .experts-hero-banner__description{
+    color:var(--fg-muted, #556);
+}
+
+/* --- Split layout: label + copy on the left, titled box on the right --- */
+body[data-page="experts"] .experts-hero-banner__content--split{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:clamp(24px, 4vw, 56px);
+    align-items:center;
+}
+
+/* Outlined box — just a blue border on the white banner, no fill. It hugs the
+   title (fit-content) so the right border stays as close to the text as the
+   left, with uniform padding all round. */
+body[data-page="experts"] .experts-hero-banner__box{
+    position:relative;
+    overflow:hidden;
+    width:fit-content;
+    background:transparent;
+    border:2px solid #2F67B7;
+    border-radius:26px;
+    padding:clamp(22px, 2.2vw, 30px) clamp(26px, 2.4vw, 34px);
+}
+
+/* Stack the two phrases so the box stays compact and reads as two tidy lines. */
+body[data-page="experts"] .experts-hero-banner__title--boxed .experts-hero-banner__line{
+    display:block;
+}
+
+/* The moved title: navy on the light interior, smaller than a full h1. */
+body[data-page="experts"] .experts-hero-banner__title--boxed{
+    color:var(--fg, #16233a);
+    font-size:clamp(1.3rem, 0.9rem + 1.3vw, 1.75rem);
+    line-height:1.2;
+    /* Entrance slide lives on the child spans; this gentle float + glow keeps
+       the title alive at rest. */
+    animation:boxTitleFloat 3.4s ease-in-out 1.6s infinite;
+}
+body[data-page="experts"] .experts-hero-banner__title--boxed .experts-hero-banner__line--accent{
+    color:#2F67B7;
+}
+
+@keyframes boxTitleFloat{
+    0%,100%{
+        transform:translateY(0);
+        text-shadow:0 0 0 rgba(47,103,183,0);
+    }
+    50%{
+        transform:translateY(-5px);
+        text-shadow:0 8px 22px rgba(47,103,183,.22);
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    body[data-page="experts"] .experts-hero-banner__title--boxed{
+        animation:none;
+    }
+}
+
+@media(max-width:860px){
+    body[data-page="experts"] .experts-hero-banner__content--split{
+        grid-template-columns:1fr;
+        gap:22px;
+    }
+}
+
+/* Compact blue stats card. */
+body[data-page="experts"] .experts-hero-stats{
+    background:#2F67B7;
+    max-width:760px;
+    /* Sits clearly below the banner copy (positive gap, no overlap). */
+    margin-top:14px;
+}
+body[data-page="experts"] .experts-hero-stat{
+    padding:24px 16px;
+}
+body[data-page="experts"] .experts-hero-stat:not(:last-child)::after{
+    background:rgba(255,255,255,.22);
+}
+body[data-page="experts"] .experts-hero-stat h2{
+    color:#fff;
+    font-size:34px;
+}
+body[data-page="experts"] .experts-hero-stat p{
+    margin-top:6px;
+    font-size:14px;
+    color:rgba(255,255,255,.82);
+}
+
+/* =====================================================
+   CATEGORY PAGES — FROSTED GLASS EXPERT CARDS
+   White, translucent cards that read as glass. A faint tinted wash on the
+   section behind them gives the backdrop-blur something to pick up, so the
+   frosting is visible rather than flat white-on-white.
+===================================================== */
+
+body[data-page="experts-category"] .section--plain{
+    background:linear-gradient(180deg,#eaf0fa 0%,#f6f8fc 55%,#fff 100%);
+}
+
+body[data-page="experts-category"] .expert-card{
+    background:rgba(255,255,255,.62);
+    -webkit-backdrop-filter:blur(16px) saturate(1.4);
+    backdrop-filter:blur(16px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.75);
+    box-shadow:
+        0 14px 42px rgba(31,54,102,.12),
+        inset 0 1px 0 rgba(255,255,255,.6);
+    transition:background .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+body[data-page="experts-category"] .expert-card:hover{
+    background:rgba(255,255,255,.78);
+    box-shadow:
+        0 20px 54px rgba(31,54,102,.16),
+        inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+/* =====================================================
    MOBILE
 ===================================================== */
 
@@ -294,19 +465,13 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 
 .experts-hero-banner{
 
-    min-height:420px;
-
-    padding:60px 20px 90px;
-}
-
-.experts-hero-banner__title{
-
-    font-size:48px;
+    /* Wider nav pill on small screens, so keep a little more top clearance. */
+    padding:84px 0 30px;
 }
 
 .experts-hero-banner__description{
 
-    font-size:18px;
+    font-size:16px;
 }
 
 .experts-hero-stats{
@@ -323,14 +488,9 @@ body[data-page="experts-category"] .header:not([data-scrolled='true']) .header__
 
 @media(max-width:640px){
 
-.experts-hero-banner__title{
-
-    font-size:36px;
-}
-
 .experts-hero-banner__description{
 
-    font-size:16px;
+    font-size:15px;
 }
 
 .experts-hero-stats{
