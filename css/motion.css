@@ -637,7 +637,7 @@
     transform: translateY(6px);
   }
 }
-.office-card {
+.office-panel {
   animation: panel-in var(--dur-slow) var(--ease);
 }
 

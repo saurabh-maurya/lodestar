@@ -424,7 +424,7 @@
     var root = document.querySelector('[data-component="office-selector"]');
     if (!root) return;
     var tabsEl = root.querySelector('.tabs');
-    var panels = Array.prototype.slice.call(root.querySelectorAll('.office-card'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[role="tabpanel"]'));
 
     initTabGroup(tabsEl, {
       onSelect: function (tab) {

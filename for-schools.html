@@ -105,16 +105,15 @@
 </section><section id="inquiry" class="section section--plain">
 <div class="container">
 
-<div class="split split--form reveal" data-reveal>
+<div class="split split--inquiry reveal" data-reveal>
   <div>
     <p class="overline">Get started</p>
     <h2 class="h2 mt-4">Empower students for 21st-century careers.</h2>
     <p class="body mt-5">Tell us a little about your school. Our partnerships team will reach out within one working day to schedule a consultation.</p>
     <div class="mt-8"><ul class="dot-list"><li>No commitment — a 30-minute discovery call</li><li>Custom rollout plan for your grade levels</li><li>Sample reports and workshop preview</li><li>Institutional pricing based on cohort size</li></ul></div>
-    <p class="mt-8" id="brochure"><a class="link-arrow" href="programs.html#outcome">Preview what the report covers<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><path d="M4.5 11.5 11.5 4.5M5.5 4.5h6v6"/></svg></a></p>
   </div>
   <form data-flow="/api/schools-inquiry" novalidate>
-  <div class="form-card form-card--subtle" data-shake="">
+  <div class="form-card form-card--glass form-card--grid" data-shake="">
     <div><h2 class="h3">Request a consultation</h2></div>
     <div class="sr-only" aria-hidden="true"><label for="company-website">Leave this field empty</label><input id="company-website" name="companyWebsite" tabindex="-1" autocomplete="off"></div>
     <div class="progress" data-state="filling">
@@ -123,7 +122,7 @@
   </div>
   <p class="progress__label"></p>
 </div>
-    <div class="field">
+    <div class="field field--wide">
   <label class="sr-only" for="schoolName">School name</label>
   <input class="input" id="schoolName" name="schoolName" type="text" placeholder="School name" required autocomplete="organization">
   <svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>
@@ -153,20 +152,13 @@
   <svg class="field__tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>
   <p class="field__error" id="email-error"></p>
 </div>
-    <fieldset style="border:0;padding:0;margin:0">
-  <legend class="field__label" style="margin-bottom:var(--space-3)">Preferred grade levels</legend>
-  <div class="chip-group"><label class="chip"><input type="radio" name="preferredProgram" value="Class 8" checked><span><svg class="chip__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>Class 8</span></label>
-<label class="chip"><input type="radio" name="preferredProgram" value="Class 9"><span><svg class="chip__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>Class 9</span></label>
-<label class="chip"><input type="radio" name="preferredProgram" value="Class 10"><span><svg class="chip__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>Class 10</span></label>
-<label class="chip"><input type="radio" name="preferredProgram" value="Class 11–12"><span><svg class="chip__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>Class 11–12</span></label></div>
-</fieldset>
     <button class="btn btn--navy btn--block" type="submit" data-idle-label="Schedule my consultation" data-busy-label="Sending…" data-done-label="Request received">
   <svg class="spinner" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5" opacity="0.28"/><path d="M20.5 12a8.5 8.5 0 0 0-8.5-8.5"/></svg>
   <span class="roll"><span class="roll__in">Schedule my consultation</span><span class="roll__out" aria-hidden="true">Schedule my consultation</span></span>
   <svg class="btn__check" style="display:none" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="m3 8.5 3.5 3.5L13 5"/></svg>
   
 </button>
-    <p class="form-note">We reply within one working day. No spam, ever. Your institutional brochure is emailed instantly on submit.</p>
+    <p class="form-note">We reply within one working day. No spam, ever.</p>
   </div>
 </form>
 </div>

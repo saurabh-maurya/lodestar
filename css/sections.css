@@ -907,7 +907,7 @@
   grid-template-columns: 1.5rem 1fr;
   gap: var(--space-4);
   align-items: baseline;
-  padding-block: var(--space-4);
+  padding-block: var(--space-3);
   border-top: 1px solid var(--border);
 }
 .office-row:first-child {
@@ -932,12 +932,26 @@
   align-items: baseline;
   gap: var(--space-2) var(--space-3);
   margin: 0;
-  font-size: var(--text-md);
+  /* Smaller than before so the office details column keeps its height in step
+     with the compact form beside it. */
+  font-size: var(--text-sm);
   font-weight: 700;
   letter-spacing: -0.008em;
 }
 .office-row dd a:hover {
   color: var(--accent);
+}
+/* Both phone numbers share one row — each number keeps its copy button beside
+   it and never breaks across lines. */
+.office-nums {
+  flex-wrap: nowrap;
+  gap: var(--space-4);
+}
+.office-num {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
 }
 /* Distinguishes the second phone number from the first without giving the
    label a column of its own. */
@@ -948,15 +962,55 @@
   text-transform: uppercase;
   color: var(--fg-muted);
 }
+/* City switch lives inside the card now (the eyebrow used to). Both tabs share
+   one row and split the width evenly, with a little breathing room below before
+   the office details begin. */
+.office-tabs {
+  margin-bottom: var(--space-5);
+  flex-wrap: nowrap;
+}
+.office-tabs .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: 0;
+  white-space: nowrap;
+  /* On hover the rolling text defaults to the blue accent; on the selected tab
+     that lands blue-on-navy. Keep the hover ink the same colour as the resting
+     ink instead — dark on the ghost tab, white on the navy-filled one. */
+  --roll-fg: var(--fg);
+}
+.office-tabs .btn[aria-selected='true'] {
+  --roll-fg: var(--ls-white);
+}
+/* Fallback before the JS marker measures in: the selected tab reads navy, the
+   other stays ghost — so switching clearly repaints the colour. Once the marker
+   is ready it takes over the navy fill (see .tabs[data-ready] rules). */
+.office-tabs:not([data-ready='true']) .btn[aria-selected='true'] {
+  background: var(--ls-navy-800);
+  border-color: transparent;
+  color: var(--ls-white);
+}
+/* Panels are plain content blocks inside the single card shell — the shell
+   (.office-card) carries the surface, radius and padding. */
+.office-card--shell .office-panel {
+  margin: 0;
+}
 .office-card__address {
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  margin-top: var(--space-2);
+  margin-top: 0;
+  /* Smaller than the old display size so the card stays in step with the
+     compact form beside it. */
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-snug);
 }
 .office-card__address svg {
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.125rem;
+  height: 1.125rem;
   flex: none;
   color: var(--accent);
   transform: translateY(0.1em);
@@ -978,6 +1032,13 @@
   width: 100%;
   height: 100%;
   border: 0;
+}
+/* Keep the office + map column in step with the compact callback form beside
+   it — cap the map height so the left side no longer runs taller than the
+   form rather than letting the 16:9 map stretch the whole column. */
+[data-component="office-selector"] .office-map {
+  aspect-ratio: auto;
+  height: clamp(160px, 18vw, 220px);
 }
 
 /* --- Resources: editorial journal index ----------------------------------
