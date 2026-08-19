@@ -1335,7 +1335,7 @@
       price: '₹7,000', amount: 7000, duration: '7 weeks',
       items: ['Career Plan A + Plan B', 'Stream & +2 subject combination', 'Entrance exams to target in 12th', 'Degree and college shortlist'],
       detail: {
-        outcome: ['Career Plan A and Plan B', 'Stream and +2 subject combination decided', 'Entrance exams to target in 12th', 'Degree and college shortlist'],
+        outcome: ['Career Plan A and Plan B', 'Stream and +2 subject combination decided', 'Entrance exams to target in 12th', 'Which tuition class to join', 'Degree and college shortlist'],
         modules: [
           { kind: 'assessment', title: 'Assessment', description: 'Psychometric + Aptitude + Interest Test' },
           { kind: 'webinar', title: 'Stream-specific career webinar', description: 'One hour, live' },
@@ -1350,7 +1350,7 @@
       price: '₹7,000', amount: 7000, duration: '5 weeks',
       items: ['Degree & specialisation decision', 'Stream-specific career webinar', 'Tuition and entrance exam plan', 'Final college selection'],
       detail: {
-        outcome: ['Degree and specialisation decision', 'Tuition and entrance exam plan', 'Final college selection'],
+        outcome: ['Decision on what degree/specialization to pursue', 'Entrance exams to write in 12th', 'Tuition classes to join', 'College selection', 'Finalize career plan or back up'],
         modules: [
           { kind: 'assessment', title: 'Assessment', description: 'Psychometric + Aptitude + Interest Test' },
           { kind: 'webinar', title: 'Stream-specific career webinar', description: 'One hour, live' },

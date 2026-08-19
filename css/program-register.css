@@ -17,7 +17,10 @@ main > [data-page="programs-register"] {
 /* ---- Section shell ---- */
 .section.prx {
   padding-block: 0;
-  overflow: hidden; /* contain the full-bleed band's rounding on small screens */
+  /* `clip` contains the full-bleed band's overflow like `hidden` would, but
+     without creating a scroll container — so the sticky register card keeps
+     holding as the page scrolls (overflow:hidden here breaks sticky). */
+  overflow: clip;
 }
 
 /* ---- Layout: mobile-first single column (intro → card → curriculum) ---- */
@@ -25,6 +28,9 @@ main > [data-page="programs-register"] {
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+  /* How far the white trust card drops below the blue band — roughly half the
+     card's height, so it reads as half in the band, half on the page. */
+  --prx-trust-drop: clamp(2.5rem, 5vw, 3.25rem);
 }
 /* prx__main is transparent to the layout so intro, card and content order
    freely around each other at every width. */
@@ -39,7 +45,7 @@ main > [data-page="programs-register"] {
   order: 1;
   position: relative;
   padding-top: calc(var(--nav-block) + var(--space-8));
-  padding-bottom: var(--space-10);
+  padding-bottom: var(--space-6);
   color: var(--fg-on-brand);
 }
 /* On mobile the intro spans the full container, so a viewport-centred
@@ -75,6 +81,9 @@ main > [data-page="programs-register"] {
 
 .prx__aside {
   order: 2;
+  /* Clear the trust card where it overhangs the band bottom (mobile stack;
+     the desktop block overrides this margin). */
+  margin-top: var(--prx-trust-drop);
 }
 
 .prx__content {
@@ -192,10 +201,14 @@ main > [data-page="programs-register"] {
 
 /* A white stats card sitting on the banner — the trust read before the fold. */
 .prx__trust {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-4);
   margin-top: var(--space-8);
+  /* Drop the card below the band so its lower half sits on the white page. */
+  margin-bottom: calc(var(--prx-trust-drop) * -1);
   padding: var(--space-5) var(--space-6);
   background: var(--surface);
   border-radius: var(--radius-lg);
@@ -231,6 +244,11 @@ main > [data-page="programs-register"] {
 }
 
 /* ---- Floating cart card ---- */
+/* A shorter thumbnail keeps the slimmer card compact and lets more of the
+   price / register controls sit above the fold. */
+.prx__aside .course-card__thumb {
+  aspect-ratio: 16 / 5;
+}
 .prx__aside .course-card {
   box-shadow: var(--shadow-lg);
   transition: transform var(--duration, 220ms) var(--ease, ease),
@@ -269,7 +287,7 @@ main > [data-page="programs-register"] {
 @media (min-width: 981px) {
   .prx__layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) var(--prx-card-w, 22rem);
+    grid-template-columns: minmax(0, 1fr) var(--prx-card-w, 20rem);
     grid-template-rows: auto 1fr;
     column-gap: clamp(var(--space-8), 4vw, var(--space-12));
     align-items: start;
@@ -314,21 +332,27 @@ main > [data-page="programs-register"] {
     grid-column: 1;
     grid-row: 1;
     z-index: 1;
-    padding-bottom: var(--space-12);
+    padding-bottom: var(--space-6);
   }
   /* The band handles the dark on desktop. */
   .prx__intro::before,
   .prx__intro::after {
     display: none;
   }
+  /* Cap the intro so the title, lead, meta and trust stats sit in one tight
+     left-aligned block instead of spreading across the full wide column. */
+  .prx__intro > * {
+    max-width: min(44rem, 100%);
+  }
   .prx__intro .prx__lead {
-    max-width: min(46rem, 100%);
+    max-width: min(40rem, 100%);
   }
 
   .prx__content {
     grid-column: 1;
     grid-row: 2;
-    padding-top: clamp(var(--space-10), 5vw, var(--space-16));
+    /* Clear the trust card's overhang from the band above. */
+    padding-top: calc(var(--prx-trust-drop) + clamp(var(--space-6), 3vw, var(--space-10)));
   }
 
   .prx__aside {
@@ -338,14 +362,15 @@ main > [data-page="programs-register"] {
     position: sticky;
     top: calc(var(--nav-block) + var(--space-4));
     align-self: start;
-    /* Push the card top down off the header, into the banner beside the title. */
-    margin-top: calc(var(--nav-block) + var(--space-6));
+    /* Drop the card top down so it lines up with the meta / "1,000+ families
+       guided" line beside the title, then it sticks to the header on scroll. */
+    margin-top: calc(var(--nav-block) + clamp(12rem, 14vw, 16rem));
   }
 }
 
 @media (min-width: 1180px) {
   .prx__layout {
-    --prx-card-w: 23.5rem;
+    --prx-card-w: 21rem;
   }
 }
 
