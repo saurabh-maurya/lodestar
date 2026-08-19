@@ -116,6 +116,9 @@
    not on the four words of its title. `.card--link` puts a stretched hit
    area behind the card's own content and lets the card carry the states.
    ---------------------------------------------------------------------- */
+.card--link {
+  cursor: pointer; /* the whole card is the link — make the affordance explicit */
+}
 .card--link .card__title a::after {
   content: '';
   position: absolute;

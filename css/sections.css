@@ -710,14 +710,35 @@
   flex: 0 0 74%;
   padding: var(--space-3) 0 var(--space-4);
   cursor: pointer;
-  transition: opacity 450ms var(--ease), transform 450ms var(--ease);
-  opacity: 0.4;
-  transform: scale(0.88);
+  transition: opacity 550ms var(--ease-out-long), transform 550ms var(--ease-out-long);
+  /* Resting state = a far, dimmed, flat-on card. The prev/next rules below
+     pull the two visible neighbours forward and tilt them toward the centre.
+     Each slide carries its own perspective() so the 3D tilt is independent of
+     the track's own translateX transform. */
+  opacity: 0.28;
+  transform: scale(0.82);
+}
+/* The card just behind the centre, on the left — tilts away so its inner
+   edge faces the viewer, coverflow-style. */
+.carousel--video .carousel__slide.is-prev {
+  opacity: 0.55;
+  transform: perspective(1600px) rotateY(24deg) scale(0.9);
+  transform-origin: center right;
+}
+/* Its mirror on the right. */
+.carousel--video .carousel__slide.is-next {
+  opacity: 0.55;
+  transform: perspective(1600px) rotateY(-24deg) scale(0.9);
+  transform-origin: center left;
 }
 .carousel--video .carousel__slide.is-active {
   opacity: 1;
-  transform: scale(1);
+  transform: perspective(1600px) rotateY(0deg) scale(1);
   cursor: default;
+  z-index: 2;
+}
+.carousel--video .carousel__slide.is-active .vtcard__media {
+  box-shadow: 0 30px 60px -18px rgba(11, 22, 38, 0.55);
 }
 @media (max-width: 620px) {
   .carousel--video .carousel__slide { flex-basis: 86%; }
@@ -848,6 +869,10 @@
   .vtcard__overlay { transition: none; }
   .vtcard__play::before { animation: none; }
   .vtcard__overlay { opacity: 1; transform: none; }
+  /* No 3D swing under reduced motion — neighbours simply dim, no tilt. */
+  .carousel--video .carousel__slide.is-prev,
+  .carousel--video .carousel__slide.is-next { transform: scale(0.9); }
+  .carousel--video .carousel__slide.is-active { transform: scale(1); }
 }
 
 /* --- Watermark band ---------------------------------------------------- */

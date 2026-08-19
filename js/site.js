@@ -799,8 +799,14 @@
         active = i;
         var r = peek ? realIndex(i) : i;
         dots.forEach(function (dot, di) { dot.classList.toggle('is-active', di === r); });
-        // Mark the centred slide so CSS can lift/brighten it and dim the rest.
-        slides.forEach(function (s, si) { s.classList.toggle('is-active', si === i); });
+        // Mark the centred slide so CSS can lift/brighten it and dim the rest,
+        // and tag the immediate neighbours so the coverflow can tilt the
+        // previous slide one way and the next slide the other.
+        slides.forEach(function (s, si) {
+          s.classList.toggle('is-active', si === i);
+          s.classList.toggle('is-prev', si === i - 1);
+          s.classList.toggle('is-next', si === i + 1);
+        });
       }
       function layout(instant) {
         if (!peek) return;
