@@ -320,6 +320,23 @@
   }
 }
 
+/* The 3Ds worked example — a single infographic replaces the three session
+   cards. Framed on the same light surface so it reads as part of the band. */
+.method-figure {
+  margin-inline: auto;
+  padding: clamp(var(--space-4), 3vw, var(--space-8));
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-2030);
+}
+.method-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+}
+
 /* ==========================================================================
    Blog rows
    A card laid on its side, so it answers to the pointer the same way: lift,
