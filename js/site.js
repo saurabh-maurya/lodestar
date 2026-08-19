@@ -898,6 +898,58 @@
   }
 
   /* ==========================================================================
+     Quote loop — a testimonial ring that shows three cards at once and
+     advances one card at a time, forever. Each tick slides the track left by
+     one card's width, then — transition-free — moves the first card to the
+     end and resets the offset, so the row never reaches an edge. Pauses on
+     hover/focus and while the tab is hidden; steps instantly (no slide) under
+     reduced motion.
+     ========================================================================== */
+  function initQuoteLoop() {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-quote-loop]'), function (root) {
+      var track = root.querySelector('[data-quote-track]');
+      if (!track || track.children.length < 2) return;
+      var interval = parseInt(root.getAttribute('data-autoplay'), 10) || 3800;
+      var animating = false;
+
+      function step() {
+        if (animating) return;
+        var first = track.children[0];
+        if (!first) return;
+        if (reduceMotion) { track.appendChild(first); return; }
+        animating = true;
+        var styles = window.getComputedStyle(track);
+        var gap = parseFloat(styles.columnGap || styles.gap) || 0;
+        var shift = first.getBoundingClientRect().width + gap;
+        track.style.transition = 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)';
+        track.style.transform = 'translateX(-' + shift + 'px)';
+        var done = function () {
+          track.removeEventListener('transitionend', done);
+          track.style.transition = 'none';
+          track.style.transform = 'translateX(0)';
+          track.appendChild(first);
+          void track.offsetWidth; // flush the reset before re-enabling transitions
+          track.style.transition = '';
+          animating = false;
+        };
+        track.addEventListener('transitionend', done);
+      }
+
+      var timer = null;
+      var paused = false;
+      function start() { if (!timer && !reduceMotion) timer = window.setInterval(function () { if (!paused && !document.hidden) step(); }, interval); }
+      function stop() { if (timer) { window.clearInterval(timer); timer = null; } }
+      root.addEventListener('mouseenter', function () { paused = true; });
+      root.addEventListener('mouseleave', function () { paused = false; });
+      root.addEventListener('focusin', function () { paused = true; });
+      root.addEventListener('focusout', function () { paused = false; });
+      document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+      start();
+    });
+  }
+
+  /* ==========================================================================
      Forms — mirrors components/forms.tsx (useFormFlow)
      Visual-only: validation, progress, honeypot and the shake/success/error
      states all run exactly as in the source app. There is no backend in this
@@ -1509,6 +1561,7 @@
     initBlogIndex();
     initStepper();
     initCarousel();
+    initQuoteLoop();
     initForms();
     initPaymentModal();
   });

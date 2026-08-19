@@ -224,6 +224,10 @@ main [id] {
 @media (min-width: 1081px) {
   .split--reverse > *:first-child { order: 2; }
   .split--reverse > *:last-child { order: 1; }
+  /* Give the inquiry form more room so its two-column layout has space. */
+  .split--inquiry { grid-template-columns: 0.82fr 1.18fr; }
+  /* Thin image column on the left, wider feature copy on the right. */
+  .split--advantage { grid-template-columns: 0.82fr 1.18fr; }
 }
 /* Career Experts / Student Experts (app/experts): the photo swaps sides
    between the two panels so the page reads as a conversation moving back
@@ -1016,6 +1020,32 @@ main [id] {
   box-shadow: var(--shadow-2030);
 }
 
+/* "Why schools need this" cards: the icon anchors the top-left while a large,
+   faded index sits opposite it, then the title and body run full width below.
+   Reads as an intentional numbered set rather than a cramped eyebrow number. */
+.card--why .card__why-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card--why .card__num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  opacity: 0.24;
+  font-variant-numeric: tabular-nums;
+}
+.card--why .card__title {
+  margin-top: var(--space-5);
+}
+/* A hairline rule separates the heading from the body copy. */
+.card--why .card__body {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
 /* Numbered badge on the "how it works" step cards. */
 .badge-num {
   display: inline-flex;
@@ -1347,6 +1377,60 @@ main [id] {
   margin-top: 0.25rem;
 }
 
+/* Perk tiles: the schools-inquiry copy column presents its four selling
+   points as a 2×2 grid of small icon cards rather than a flat bullet list,
+   so the left side carries visual weight opposite the glass form. */
+.perk-grid {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-8);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.perk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
+}
+.perk:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+.perk__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--ls-navy-800);
+}
+.perk__icon svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+.perk__text {
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--fg);
+}
+@media (max-width: 560px) {
+  .perk-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Arrow rows inside the "session" cards on How It Works. */
 .arrow-row {
   display: flex;
@@ -1471,6 +1555,49 @@ main [id] {
 .form-card--tint {
   background: var(--bg-tint);
   box-shadow: none;
+}
+/* Glass variant: translucent, frosted panel that lets the page tint show
+   through. Used on the schools inquiry form. */
+.form-card--glass {
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  box-shadow: var(--shadow-lg);
+}
+/* Two-column field layout so the card reads wider and shorter — the whole
+   form stays within one screen. Header, progress, chips, button and note
+   span the full width; the text fields pair up two per row. */
+.form-card--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+  align-items: start;
+}
+.form-card--grid > *:not(.field) {
+  grid-column: 1 / -1;
+}
+.form-card--grid .field--wide {
+  grid-column: 1 / -1;
+}
+/* Grade-level chips: even full-width columns that line up in a tidy grid,
+   and no tick on select — the navy fill alone carries the chosen state,
+   which reads cleaner here than a checkmark that widens the pill. */
+.form-card--grid .chip-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.form-card--grid .chip span {
+  width: 100%;
+}
+.form-card--grid .chip__check {
+  display: none;
+}
+@media (max-width: 560px) {
+  .form-card--grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .form-note {
   font-size: var(--text-sm);
@@ -1654,6 +1781,206 @@ main [id] {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--fg);
+}
+
+/* --- Logo marquee --------------------------------------------------------
+   The partner-school chips scroll in a continuous ring, greyed out at rest.
+   The strip is two identical sets side by side; translating the track by one
+   set's width (-50%) tiles seamlessly — spacing lives in each chip's trailing
+   margin (not flex `gap`) so the two halves line up exactly. Hovering the
+   strip pauses the scroll; hovering a chip brings it back to full colour. */
+.logo-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.logo-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: logo-marquee-scroll 36s linear infinite;
+}
+.logo-marquee__track .school-logo {
+  margin-right: var(--space-5);
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: filter var(--duration) var(--ease), opacity var(--duration) var(--ease),
+    border-color var(--duration) var(--ease), transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease);
+}
+.logo-marquee__track .school-logo:hover {
+  filter: grayscale(0);
+  opacity: 1;
+}
+.logo-marquee:hover .logo-marquee__track {
+  animation-play-state: paused;
+}
+@keyframes logo-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .logo-marquee__track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-4) var(--space-5);
+  }
+  .logo-marquee__track .school-logo {
+    margin-right: 0;
+    filter: none;
+    opacity: 1;
+  }
+  /* The duplicated set is only needed to make the scroll seamless. */
+  .logo-marquee__track .school-logo[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* --- Photo duo -----------------------------------------------------------
+   Two square photos on the Lodestar-advantage row, tilted in opposite
+   directions and overlapping at one corner (~15%): the back photo sits
+   top-right, the front photo bottom-left, so the front's top-right corner
+   covers the back's bottom-left. A surface-coloured ring separates them. */
+.photo-duo {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+}
+.photo-duo__item {
+  position: absolute;
+  width: 58%;
+  aspect-ratio: 1 / 1;
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.photo-duo__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.photo-duo__item--back {
+  top: 0;
+  right: 0;
+  transform: rotate(4deg);
+}
+.photo-duo__item--front {
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  transform: rotate(-4deg);
+  /* ring that lifts the front photo off the one behind it */
+  box-shadow: 0 0 0 6px var(--surface), var(--shadow-lg);
+}
+@media (max-width: 560px) {
+  .photo-duo {
+    max-width: 22rem;
+  }
+}
+
+/* --- Advantage list ------------------------------------------------------
+   The Lodestar-advantage points as a numbered stack of cards: a gradient
+   number chip, a bold title and muted body, each card lifting on hover. */
+.advantage-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.advantage-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-5);
+  align-items: start;
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+.advantage-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+.advantage-item__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(150deg, var(--ls-blue-400), var(--ls-blue-650));
+  color: var(--ls-white);
+  font-weight: 800;
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+}
+.advantage-item__title {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--fg);
+}
+.advantage-item__body p {
+  margin-top: var(--space-2);
+  color: var(--fg-muted);
+  line-height: var(--leading-normal);
+}
+
+/* --- Quote loop ----------------------------------------------------------
+   A testimonial carousel that shows three cards at once and rotates in a
+   continuous ring, one card at a time (see initQuoteLoop in site.js). The
+   track is a plain flex row inside a clipped viewport; the script slides it
+   one card left, then silently moves the first card to the end so the loop
+   never reaches an edge. Two cards per view on tablet, one on phones. */
+.quote-loop {
+  --quote-gap: var(--space-6);
+}
+.quote-loop__viewport {
+  overflow: hidden;
+}
+.quote-loop__track {
+  display: flex;
+  gap: var(--quote-gap);
+  align-items: stretch;
+  will-change: transform;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.quote-loop__item {
+  flex: 0 0 calc((100% - var(--quote-gap) * 2) / 3);
+  min-width: 0;
+}
+.quote-loop__card {
+  height: 100%;
+}
+.quote-loop__card .body {
+  margin-top: var(--space-2);
+}
+@media (max-width: 900px) {
+  .quote-loop__item {
+    flex-basis: calc((100% - var(--quote-gap)) / 2);
+  }
+}
+@media (max-width: 600px) {
+  .quote-loop__item {
+    flex-basis: 100%;
+  }
 }
 
 .divider {

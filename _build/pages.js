@@ -19,7 +19,7 @@ function homeHero() {
       </h1>
       <p class="lead measure">Psychometric assessment, 250+ researched careers and three one-to-one sessions with a trained expert — ending in a written plan from stream to college. Trusted by 40,000+ parents since 2011.</p>
       <div class="flex flex-wrap gap-4">
-        <a href="free-assessment.html" class="btn btn--primary magnetic">${roll('Take the Free Assessment')}${ICON.arrowRight}</a>
+        <a href="https://www.lodestar.guru:8443/edupath_webui/Test/SendMessageToChlid" target="_blank" rel="noopener" class="btn btn--primary magnetic">${roll('Take the Free Assessment')}${ICON.arrowRight}</a>
       </div>
       <div class="hero__trust">
         ${stars()}
@@ -61,6 +61,7 @@ function heroNote() {
    ========================================================================== */
 const homeProgramPicks = [
   { slug: 'foundation-building-plus', icon: 'compass', blurb: 'Assessment, webinars and three expert sessions — the complete start.' },
+  { slug: 'foundation-building', icon: 'compass', blurb: 'Assessment and webinars — early awareness with a potential map.' },
   { slug: 'core-decision', icon: 'target', blurb: 'The stream decision, made with data instead of guesswork.' },
   { slug: 'finalizing-decision', icon: 'growth', blurb: 'A college shortlist and a concrete plan before board exams.' },
 ];
@@ -70,7 +71,7 @@ function homePage() {
     const program = D.programs.find(p => p.slug === pick.slug);
     return reveal(card({ tone: 'clay' },
       cardMedia(program.grade, { icon: cardIcon(pick.icon), src: program.image, alt: `Students in the ${program.gradeLabel} age group` }) +
-      cardTitle(program.title, { size: 'lg' }) + cardBody(pick.blurb)
+      cardTitle(program.title) + cardBody(pick.blurb)
     ), { delay: i * 90 });
   }).join('\n');
 
@@ -115,7 +116,7 @@ ${reveal(`${media('Counselling session in progress', { variant: 'tall', src: 'im
   <div><p class="overline">Our programs</p><h2 class="h2 mt-4">One program for wherever your child is right now</h2></div>
   ${arrowLink('programs.html', 'Explore all programs')}
 </div>
-<div class="grid grid--3 mt-12">${programsPicks}</div>`) +
+<div class="grid grid--4 mt-12">${programsPicks}</div>`) +
 
     section({ tone: 'plain', tight: true }, `
 ${reveal(`<div class="split split--copy-wide" style="align-items:center">
@@ -125,7 +126,7 @@ ${reveal(`<div class="split split--copy-wide" style="align-items:center">
     <p class="lead mt-5">Fifteen minutes online. Your child answers, you get an instant snapshot of their strengths and interest areas — and a clear sense of whether the full program is worth it. No payment, no obligation.</p>
   </div>
   <div class="stack gap-3" style="align-items:flex-start">
-    <a href="free-assessment.html" class="btn btn--primary magnetic">${roll('Take the Free Assessment')}${ICON.arrowRight}</a>
+    <a href="https://www.lodestar.guru:8443/edupath_webui/Test/SendMessageToChlid" target="_blank" rel="noopener" class="btn btn--primary magnetic">${roll('Take the Free Assessment')}${ICON.arrowRight}</a>
     <p class="small">lodestar.guru/free-assessment · secure HTTPS</p>
   </div>
 </div>`, { className: 'cta-panel' })}`) +

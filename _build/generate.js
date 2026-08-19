@@ -73,7 +73,7 @@ const site = {
   phoneHref: 'tel:+918971520005',
   email: 'info@lodestar.guru',
   emailHref: 'mailto:info@lodestar.guru',
-  productAppUrl: 'https://app.lodestar.guru/login',
+  productAppUrl: 'https://www.lodestar.guru:8443/edupath_webui/',
 };
 
 const primaryNav = [
@@ -301,7 +301,7 @@ function header(pageSection) {
     <span class="header__divider" aria-hidden="true"></span>
     <div class="header__actions">
       <a class="header__login" href="${site.productAppUrl}" rel="noopener noreferrer">Login</a>
-      <a class="btn btn--primary btn--sm btn--auto" href="free-assessment.html">${roll('Free Assessment')}</a>
+      <a class="btn btn--primary btn--sm btn--auto" href="https://www.lodestar.guru:8443/edupath_webui/Test/SendMessageToChlid" target="_blank" rel="noopener">${roll('Free Assessment')}</a>
       <button type="button" class="header__menu-btn" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
         ${ICON.menu}
       </button>
@@ -312,7 +312,7 @@ function header(pageSection) {
       ${mobileLinks}
     </ul>
     <div class="mobile-nav__actions">
-      <a class="btn btn--primary" href="free-assessment.html">${roll('Free Assessment')}</a>
+      <a class="btn btn--primary" href="https://www.lodestar.guru:8443/edupath_webui/Test/SendMessageToChlid" target="_blank" rel="noopener">${roll('Free Assessment')}</a>
       <a class="btn btn--ghost" href="${site.productAppUrl}" rel="noopener noreferrer">${roll('Login')}</a>
     </div>
   </div>
@@ -346,7 +346,7 @@ function footer() {
       <div class="footer__cta">
         <h2>Start with the free test</h2>
         <p>Fifteen minutes. Instant snapshot. No payment.</p>
-        <a class="btn btn--primary btn--sm btn--auto" href="free-assessment.html">${roll('Free Assessment')}${ICON.arrowRight}</a>
+        <a class="btn btn--primary btn--sm btn--auto" href="https://www.lodestar.guru:8443/edupath_webui/Test/SendMessageToChlid" target="_blank" rel="noopener">${roll('Free Assessment')}${ICON.arrowRight}</a>
       </div>
     </div>
     <div class="footer__bottom">
@@ -360,7 +360,7 @@ function footer() {
 function floatingCta() {
   return `<div class="floatcta" data-visible="false" aria-hidden="true" inert>
   <span class="floatcta__copy"><strong>Start with the free test</strong><span>Fifteen minutes. No payment.</span></span>
-  <a class="btn btn--primary btn--sm btn--auto" href="free-assessment.html">${roll('Free Assessment')}${ICON.arrowRight}</a>
+  <a class="btn btn--primary btn--sm btn--auto" href="https://www.lodestar.guru:8443/edupath_webui/Test/SendMessageToChlid" target="_blank" rel="noopener">${roll('Free Assessment')}${ICON.arrowRight}</a>
   <button type="button" class="floatcta__close" aria-label="Dismiss this prompt">${ICON.close(16, 16)}</button>
 </div>`;
 }
