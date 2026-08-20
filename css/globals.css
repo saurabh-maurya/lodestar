@@ -183,6 +183,25 @@ main [id] {
   background: var(--bg-hero);
   color: var(--fg-on-brand);
 }
+/* A small navy banner used in place of the tall light hero on the three
+   legal pages (Privacy, Terms, Refund). Dark-blue surface, light copy,
+   compact vertical rhythm — a header strip, not a full-viewport hero. */
+.section--legal-banner {
+  background: var(--bg-brand);
+  color: var(--fg-on-brand);
+  padding-block-end: clamp(var(--space-8), 4vw, var(--space-12));
+}
+main > .section--legal-banner:first-child {
+  --section-pad-start: clamp(var(--space-8), 4vw, var(--space-12));
+}
+.section--legal-banner .overline {
+  color: var(--fg-on-brand);
+  opacity: 0.72;
+}
+.section--legal-banner .lead {
+  color: var(--fg-on-brand);
+  opacity: 0.85;
+}
 
 .stack {
   display: flex;
