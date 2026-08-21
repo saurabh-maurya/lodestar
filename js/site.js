@@ -446,14 +446,63 @@
   /* ==========================================================================
      Blog index — mirrors components/blog-index.tsx
      ========================================================================== */
-  var WORDPRESS_API_URL = ''; // e.g. 'https://cms.internal.lodestar.guru' — set to enable live posts; empty uses the built-in fallback list below (matches the original app's un-configured behaviour).
+  // Live WordPress endpoint: '<base>/wp-json/wp/v2/posts' is fetched from here.
+  var WORDPRESS_API_URL = 'https://www.lodestar.guru/blog';
 
-  var fallbackPosts = [
-    { id: 'featured', slug: 'one-career-decision', title: 'You look at your child and see one career decision. There is more to it than that.', excerpt: 'The stream choice after Class 10 is not one decision but a chain of them — electives, entrance exams, tutorials, degree, college. Here is how the chain actually works.', author: 'Lodestar Editorial', readingTime: '6 min read', date: '5 Aug 2026', category: 'Careers', image: 'images/founders-campus.jpg', imageAlt: 'Students at work in a modern Indian classroom' },
-    { id: 2, slug: 'which-stream-after-10th', title: 'Which stream to choose after 10th: a decision framework', excerpt: 'Science, Commerce or Arts is the visible choice. The one that actually decides a career is the set of electives underneath it.', author: 'Lodestar Editorial', readingTime: '6 min read', date: '28 Jul 2026', category: 'Streams', image: 'images/program-class10.jpg', imageAlt: 'A student weighing a decision in the classroom' },
-    { id: 3, slug: 'aptitude-vs-interest', title: 'Why aptitude testing matters more than interest alone', excerpt: 'A child can be interested in something they have no aptitude for, and good at something they have never considered. The test is what tells the two apart.', author: 'Lodestar Editorial', readingTime: '6 min read', date: '20 Jul 2026', category: 'Psychometrics', image: 'images/program-class9.jpg', imageAlt: 'Students sitting an assessment in class' },
-    { id: 4, slug: 'beyond-engineering', title: 'Beyond engineering: 250 careers most parents have never heard of', excerpt: 'Engineering and medicine are the two careers every parent already knows the name of. Here is what the other 248 actually are.', author: 'Lodestar Editorial', readingTime: '6 min read', date: '12 Jul 2026', category: 'Careers', image: 'images/program-class1112.jpg', imageAlt: 'Students discussing career options together' },
-    { id: 5, slug: 'reading-a-psychometric-report', title: 'How to read a psychometric report without over-interpreting it', excerpt: 'A 30-page report is not a verdict. Here is which sections to weigh heavily, and which are context rather than instruction.', author: 'Lodestar Editorial', readingTime: '6 min read', date: '3 Jul 2026', category: 'Psychometrics', image: 'images/expert-step-report.jpg', imageAlt: 'Hands reviewing a written report' },
+  // Snapshot of the four most recent posts, used only if the live fetch fails.
+  var FALLBACK_POSTS = [
+    {
+      id: 1032,
+      slug: 'career-counselling-in-bangalore-for-students',
+      link: 'https://www.lodestar.guru/blog/career-counselling-in-bangalore-for-students/',
+      title: 'Career Counselling in Bangalore for Students: A Parent\u2019s Guide',
+      excerpt: 'Choosing the right career has become one of the biggest challenges for families today. With hundreds of courses, fast-changing industries, and new fields emerging every year, your child can easily feel unsure which direction matches their interests and abilities. This is where career counselling in Bangalore for students helps, by giving your child a clear \u2026',
+      author: 'Lodestar',
+      readingTime: '6 min read',
+      date: '20 Aug 2026',
+      category: 'Careers',
+      image: 'https://www.lodestar.guru/blog/wp-content/uploads/2026/08/Career-Counselling-Near-Bangalore-768x480.png',
+      imageAlt: '',
+    },
+    {
+      id: 1003,
+      slug: 'should-you-let-your-child-follow-their-passion-a-balanced-view-for-parents',
+      link: 'https://www.lodestar.guru/blog/should-you-let-your-child-follow-their-passion-a-balanced-view-for-parents/',
+      title: 'Should You Let Your Child Follow Their Passion? A Balanced View for Parents',
+      excerpt: '\u201cFollow your passion\u201d is everywhere, and so is the quieter worry that follows it. Your child announces they want to be an artist, a gamer, a musician, or a filmmaker, and you feel torn between supporting their happiness and protecting their future. Should you let your child follow their passion, or steer them toward something \u2026',
+      author: 'Lodestar',
+      readingTime: '6 min read',
+      date: '17 Aug 2026',
+      category: 'Careers',
+      image: 'https://www.lodestar.guru/blog/wp-content/uploads/2026/08/supporting-your-childs-career-aspirations-768x480.png',
+      imageAlt: '',
+    },
+    {
+      id: 993,
+      slug: 'when-your-childs-dream-career-worries-you',
+      link: 'https://www.lodestar.guru/blog/when-your-childs-dream-career-worries-you/',
+      title: 'When Your Child\u2019s Dream Career Worries You: A Parent\u2019s Guide',
+      excerpt: 'Hearing your child say they want to become a professional gamer, actor, YouTuber, wildlife photographer, entrepreneur, musician, or sportsperson can leave many parents feeling uncertain. It is natural to feel anxious when a child\u2019s ambitions seem different from familiar careers like medicine, engineering, law, or government services. If your child\u2019s dream career worries you, you \u2026',
+      author: 'Lodestar',
+      readingTime: '6 min read',
+      date: '17 Aug 2026',
+      category: 'Careers',
+      image: 'https://www.lodestar.guru/blog/wp-content/uploads/2026/08/parents-worried-about-childs-career-choice-768x480.png',
+      imageAlt: '',
+    },
+    {
+      id: 980,
+      slug: 'career-guidance-for-students-after-10th-in-bangalore',
+      link: 'https://www.lodestar.guru/blog/career-guidance-for-students-after-10th-in-bangalore/',
+      title: 'Career Guidance After 10th in Bangalore: A Parent\u2019s Guide',
+      excerpt: 'Once your child clears Class 10 in Bangalore, a run of connected decisions arrives quickly: state PUC or CBSE, which stream, and which entrance exams to aim for. These are not small choices. In Karnataka they shape the next two years and the years of preparation that follow, which is why sound career guidance after \u2026',
+      author: 'Lodestar',
+      readingTime: '6 min read',
+      date: '16 Aug 2026',
+      category: 'Careers',
+      image: 'https://www.lodestar.guru/blog/wp-content/uploads/2026/08/career-counselling-after-10th-in-Bangalore-768x480.jpg',
+      imageAlt: '',
+    },
   ];
 
   function stripHtml(input) {
@@ -490,7 +539,7 @@
   }
 
   function fetchPosts(limit) {
-    if (!WORDPRESS_API_URL) return Promise.resolve(fallbackPosts.slice(0, limit));
+    if (!WORDPRESS_API_URL) return Promise.resolve(FALLBACK_POSTS.slice(0, limit));
     var base = WORDPRESS_API_URL.replace(/\/$/, '');
     return fetch(base + '/wp-json/wp/v2/posts?per_page=' + limit + '&_embed=author,wp:featuredmedia,wp:term')
       .then(function (res) {
@@ -504,6 +553,7 @@
           var out = {
             id: post.id,
             slug: post.slug,
+            link: post.link,
             title: stripHtml(post.title.rendered),
             excerpt: stripHtml(post.excerpt.rendered),
             author: (embedded.author && embedded.author[0] && embedded.author[0].name) || 'Lodestar Editorial',
@@ -518,8 +568,8 @@
         });
       })
       .catch(function (err) {
-        console.warn('[wordpress] falling back to static posts:', err);
-        return fallbackPosts.slice(0, limit);
+        console.warn('[wordpress] posts fetch failed, using fallback:', err);
+        return FALLBACK_POSTS.slice(0, limit);
       });
   }
 
@@ -1327,6 +1377,182 @@
     });
   }
 
+  /* -------------------------------------------------------------------------
+     Expert booking — reuses the register-modal dialog on
+     experts-career-experts.html. Each "Book Session" button carries the
+     expert's name, role and price as data-* attributes; clicking opens the
+     same modal populated for that expert.
+     ---------------------------------------------------------------------- */
+  function openExpertModal(modal, expert) {
+    var formEl = modal.querySelector('form');
+    if (!formEl) return;
+
+    var setSummary = function (key, value) {
+      var el = formEl.querySelector('[data-summary="' + key + '"]');
+      if (el) el.textContent = value;
+    };
+    setSummary('grade', expert.role || '30-minute expert session');
+    setSummary('course', expert.name);
+
+    var setHidden = function (name, value) {
+      var el = formEl.querySelector('input[name="' + name + '"]');
+      if (el) el.value = value;
+    };
+    setHidden('expert', expert.name);
+    setHidden('expertRole', expert.role || '');
+    setHidden('expertSlug', (expert.name || '').toLowerCase().replace(/\s+/g, '-'));
+
+    var totalEl = formEl.querySelector('[data-pay-total]');
+    if (totalEl) totalEl.textContent = rupees(parseInt(expert.price, 10) || 0);
+
+    var labels = {
+      idle: 'Submit',
+      busy: 'Submitting…',
+      done: 'Booking received',
+    };
+    var submitBtn = formEl.querySelector('button[type="submit"]');
+    if (formEl.dataset.status === 'success') {
+      formEl.dataset.status = 'idle';
+      setButtonState(submitBtn, 'idle', labels);
+      var note = formEl.querySelector('.form-note[data-status-note]');
+      if (note) note.remove();
+    }
+    readProgress(formEl);
+
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+    var firstInput = formEl.querySelector('input:not([type="hidden"]), select');
+    if (firstInput) { try { firstInput.focus(); } catch (e) {} }
+  }
+
+  function initExpertBooking() {
+    var modal = document.getElementById('register-modal');
+    if (!modal) return;
+    var buttons = document.querySelectorAll('[data-book-expert]');
+    if (!buttons.length) return;
+    Array.prototype.forEach.call(buttons, function (btn) {
+      btn.addEventListener('click', function () {
+        openExpertModal(modal, {
+          name: btn.getAttribute('data-expert-name') || '',
+          role: btn.getAttribute('data-expert-role') || '',
+          price: btn.getAttribute('data-expert-price') || '0',
+        });
+      });
+    });
+  }
+
+  /* -------------------------------------------------------------------------
+     Test booking — reuses the register-modal dialog on programs.html for
+     stand-alone tests (Stream Selector, Career Fitment Test, etc.). Each
+     "Register Now" button carries the test name, grade and price as data-*
+     attributes.
+     ---------------------------------------------------------------------- */
+  function openTestModal(modal, test) {
+    var formEl = modal.querySelector('form');
+    if (!formEl) return;
+
+    var setSummary = function (key, value) {
+      var el = formEl.querySelector('[data-summary="' + key + '"]');
+      if (el) el.textContent = value;
+    };
+    setSummary('grade', test.grade);
+    setSummary('course', test.name);
+
+    var setHidden = function (name, value) {
+      var el = formEl.querySelector('input[name="' + name + '"]');
+      if (el) el.value = value;
+    };
+    setHidden('test', test.name);
+    setHidden('testGrade', test.grade);
+    setHidden('testSlug', (test.name || '').toLowerCase().replace(/\s+/g, '-'));
+
+    var totalEl = formEl.querySelector('[data-pay-total]');
+    if (totalEl) totalEl.textContent = rupees(parseInt(test.price, 10) || 0);
+
+    var labels = {
+      idle: 'Submit',
+      busy: 'Submitting…',
+      done: 'Registration received',
+    };
+    var submitBtn = formEl.querySelector('button[type="submit"]');
+    if (formEl.dataset.status === 'success') {
+      formEl.dataset.status = 'idle';
+      setButtonState(submitBtn, 'idle', labels);
+      var note = formEl.querySelector('.form-note[data-status-note]');
+      if (note) note.remove();
+    }
+    readProgress(formEl);
+
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+    var firstInput = formEl.querySelector('input:not([type="hidden"]), select');
+    if (firstInput) { try { firstInput.focus(); } catch (e) {} }
+  }
+
+  function initTestBooking() {
+    var modal = document.getElementById('register-modal');
+    if (!modal) return;
+    var buttons = document.querySelectorAll('[data-book-test]');
+    if (!buttons.length) return;
+    Array.prototype.forEach.call(buttons, function (btn) {
+      btn.addEventListener('click', function () {
+        openTestModal(modal, {
+          name: btn.getAttribute('data-test-name') || '',
+          grade: btn.getAttribute('data-test-grade') || '',
+          price: btn.getAttribute('data-test-price') || '0',
+        });
+      });
+    });
+  }
+
+  /* -------------------------------------------------------------------------
+     Press modal — media.html cards open an in-page dialog with the coverage
+     note instead of an external URL, because most of the 2016–2017 archive
+     links are dead. Reads the clicked card's own eyebrow / title / body /
+     meta so we don't duplicate copy, and appends the hidden .press-card__note
+     that carries the extended summary.
+     ---------------------------------------------------------------------- */
+  function initPressModal() {
+    var modal = document.getElementById('press-modal');
+    if (!modal) return;
+    var triggers = document.querySelectorAll('[data-press-open]');
+    if (!triggers.length) return;
+
+    var closeBtn = modal.querySelector('[data-press-close]');
+    if (closeBtn) closeBtn.addEventListener('click', function () { modal.close(); });
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) modal.close();
+    });
+
+    var fields = {
+      eyebrow: modal.querySelector('[data-press-field="eyebrow"]'),
+      title: modal.querySelector('[data-press-field="title"]'),
+      meta: modal.querySelector('[data-press-field="meta"]'),
+      excerpt: modal.querySelector('[data-press-field="excerpt"]'),
+      note: modal.querySelector('[data-press-field="note"]'),
+    };
+
+    Array.prototype.forEach.call(triggers, function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        var card = link.closest('.card');
+        if (!card) return;
+        var eyebrow = card.querySelector('.card__eyebrow');
+        var title = card.querySelector('.card__title');
+        var body = card.querySelector('.card__body');
+        var meta = card.querySelector('.card__meta');
+        var note = card.querySelector('.press-card__note');
+        if (fields.eyebrow) fields.eyebrow.textContent = eyebrow ? eyebrow.textContent.trim() : '';
+        if (fields.title) fields.title.textContent = title ? title.textContent.trim() : '';
+        if (fields.meta) fields.meta.innerHTML = meta ? meta.innerHTML : '';
+        if (fields.excerpt) fields.excerpt.textContent = body ? body.textContent.trim() : '';
+        if (fields.note) fields.note.textContent = note ? note.textContent.trim() : '';
+        if (typeof modal.showModal === 'function') modal.showModal();
+        else modal.setAttribute('open', '');
+      });
+    });
+  }
+
   function setupPaymentForm() {
     var pay = document.querySelector('[data-component="payment-form"]');
     if (!pay) return;
@@ -1617,6 +1843,9 @@
     initQuoteLoop();
     initForms();
     initRegisterModal();
+    initExpertBooking();
+    initTestBooking();
+    initPressModal();
   });
 
   window.LodestarToast = Toast;

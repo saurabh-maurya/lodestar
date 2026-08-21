@@ -1,0 +1,430 @@
+/* =====================================================
+   MEDIA — IN THE NEWS
+   Hero mirrors the experts.html hub treatment: a light-blue banner with the
+   page label as the left-side headline, a navy outlined "boxed" title on
+   the right, and a compact blue 4-stat card that half-overlaps the banner.
+   Kept in its own stylesheet so it can't reach the experts pages.
+===================================================== */
+
+.media-hero-banner{
+    position:relative;
+    overflow:hidden;
+    width:100%;
+    background:#e9f1fc;
+    text-align:left;
+    /* Top padding clears the fixed nav pill; bottom padding leaves room for
+       the stats card to hang half inside the banner. */
+    padding:78px 0 86px;
+}
+
+/* Faint blue dot texture. */
+.media-hero-banner::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(rgba(47,103,183,.12) 1px, transparent 1px);
+    background-size:34px 34px;
+    opacity:.6;
+}
+
+/* Faint blue glow highlights in the top corners. */
+.media-hero-banner::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(circle at 15% 15%,rgba(47,103,183,.06),transparent 35%),
+        radial-gradient(circle at 85% 20%,rgba(47,103,183,.06),transparent 30%);
+}
+
+.media-hero-banner__content{
+    position:relative;
+    z-index:5;
+    /* Mirror the site .container so the banner copy lines up with the grids
+       and stats below it. */
+    width:100%;
+    max-width:var(--container);
+    margin-inline:auto;
+    padding-inline:var(--space-6);
+}
+
+/* Two-column layout: label + copy on the left, outlined title box on right. */
+.media-hero-banner__content--split{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:clamp(24px, 4vw, 56px);
+    align-items:center;
+}
+
+/* The label doubles as the hero's headline on the left, so it goes large. */
+.media-hero-banner__tag{
+    color:#2F67B7;
+    font-size:clamp(1.9rem, 1rem + 3vw, 3rem);
+    font-weight:700;
+    letter-spacing:1px;
+    line-height:1.05;
+    text-transform:uppercase;
+    margin:0 0 14px;
+    opacity:0;
+    transform:scale(.8);
+    animation:mediaTagPopup .9s ease forwards;
+}
+
+@keyframes mediaTagPopup{
+    0%{
+        opacity:0;
+        transform:scale(.8) translateY(20px);
+    }
+    70%{
+        transform:scale(1.05) translateY(-3px);
+    }
+    100%{
+        opacity:1;
+        transform:scale(1) translateY(0);
+    }
+}
+
+.media-hero-banner__description{
+    margin:18px 0 0;
+    max-width:680px;
+    color:var(--fg-muted, #556);
+    font-size:17px;
+    line-height:1.6;
+}
+
+/* Outlined title box — blue border on the light banner, no fill. Hugs the
+   text (fit-content) so the right border stays as close to the copy as the
+   left, with uniform padding all round. */
+.media-hero-banner__box{
+    position:relative;
+    overflow:hidden;
+    width:fit-content;
+    background:transparent;
+    border:2px solid #2F67B7;
+    border-radius:26px;
+    padding:clamp(22px, 2.2vw, 30px) clamp(26px, 2.4vw, 34px);
+}
+
+.media-hero-banner__title{
+    margin:0;
+    color:var(--fg, #16233a);
+    font-weight:800;
+    line-height:1.1;
+    letter-spacing:-0.015em;
+}
+
+/* Stack the two phrases so the box stays compact and reads as two tidy lines. */
+.media-hero-banner__title--boxed{
+    color:var(--fg, #16233a);
+    font-size:clamp(1.3rem, 0.9rem + 1.3vw, 1.75rem);
+    line-height:1.2;
+    /* Entrance slide lives on the child spans; this gentle float + glow keeps
+       the title alive at rest. */
+    animation:mediaBoxTitleFloat 3.4s ease-in-out 1.6s infinite;
+}
+
+.media-hero-banner__title--boxed .media-hero-banner__line{
+    display:block;
+}
+
+.media-hero-banner__line{
+    /* inline-block keeps the phrase intact while still allowing the slide-in
+       transform (a plain inline span would ignore it). */
+    display:inline-block;
+    opacity:0;
+    transform:translateX(-120px);
+    animation:mediaHeadingSlide 1s ease forwards;
+}
+
+.media-hero-banner__line:nth-child(2){
+    animation-delay:.35s;
+}
+
+.media-hero-banner__line--accent{
+    color:#2F67B7;
+}
+
+@keyframes mediaHeadingSlide{
+    from{
+        opacity:0;
+        transform:translateX(-120px);
+    }
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+@keyframes mediaBoxTitleFloat{
+    0%,100%{
+        transform:translateY(0);
+        text-shadow:0 0 0 rgba(47,103,183,0);
+    }
+    50%{
+        transform:translateY(-5px);
+        text-shadow:0 8px 22px rgba(47,103,183,.22);
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .media-hero-banner__title--boxed{
+        animation:none;
+    }
+    .media-hero-banner__tag,
+    .media-hero-banner__line{
+        opacity:1;
+        transform:none;
+        animation:none;
+    }
+}
+
+
+/* =====================================================
+   COMPACT BLUE STATS CARD
+   Sits half inside the banner and half on the white page below it.
+===================================================== */
+
+.media-hero-stats{
+    background:#2F67B7;
+    border-radius:26px;
+    max-width:760px;
+    /* Overlap the banner's lower edge. */
+    margin:-55px auto 0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    overflow:hidden;
+    box-shadow:0 18px 60px rgba(0,0,0,.12);
+    position:relative;
+    z-index:20;
+}
+
+.media-hero-stat{
+    padding:24px 16px;
+    text-align:center;
+    position:relative;
+}
+
+.media-hero-stat:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    right:0;
+    top:20%;
+    height:60%;
+    width:1px;
+    background:rgba(255,255,255,.22);
+}
+
+.media-hero-stat h2{
+    margin:0;
+    color:#fff;
+    font-size:34px;
+    font-weight:800;
+}
+
+.media-hero-stat p{
+    margin-top:6px;
+    font-size:14px;
+    color:rgba(255,255,255,.82);
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:860px){
+    .media-hero-banner__content--split{
+        grid-template-columns:1fr;
+        gap:22px;
+    }
+}
+
+@media(max-width:900px){
+    .media-hero-banner{
+        padding:84px 0 82px;
+    }
+    .media-hero-banner__description{
+        font-size:16px;
+    }
+    .media-hero-stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+    .media-hero-stat:nth-child(2)::after{
+        display:none;
+    }
+}
+
+@media(max-width:640px){
+    .media-hero-banner__description{
+        font-size:15px;
+    }
+    .media-hero-stats{
+        grid-template-columns:1fr;
+    }
+    .media-hero-stat::after{
+        display:none;
+    }
+}
+
+
+/* =====================================================
+   PRESS CARD CUE
+   The at-rest "Read the coverage note →" line sits at the bottom of each
+   press card and lights up on hover, so it's clear the card opens a panel
+   rather than jumping out to a dead external URL.
+===================================================== */
+
+.press-card__cue{
+    margin:14px 0 0;
+    color:#2F67B7;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.02em;
+    transition:transform var(--dur-base, .2s) var(--ease, ease), color var(--dur-base, .2s) var(--ease, ease);
+}
+
+.card--link:hover .press-card__cue{
+    transform:translateX(3px);
+    color:var(--accent-hover, #1E4482);
+}
+
+
+/* =====================================================
+   PRESS MODAL
+   Opens when a coverage card is clicked. Reads the card's own text so we
+   don't duplicate content, and appends the hidden .press-card__note that
+   carries the extended coverage summary.
+===================================================== */
+
+.press-modal{
+    position:fixed;
+    inset:0;
+    margin:auto;
+    width:min(92vw, 640px);
+    max-width:640px;
+    max-height:90vh;
+    overflow:auto;
+    padding:0;
+    border:none;
+    border-radius:20px;
+    background:transparent;
+    box-shadow:0 30px 80px rgba(15,30,70,.24);
+    color:var(--fg, #16233a);
+}
+
+.press-modal::backdrop{
+    background:rgba(12,22,46,.55);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+}
+
+.press-modal__panel{
+    position:relative;
+    background:#fff;
+    border-radius:20px;
+    padding:32px clamp(24px, 4vw, 40px);
+}
+
+.press-modal__close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:36px;
+    height:36px;
+    border:none;
+    border-radius:50%;
+    background:transparent;
+    color:var(--fg-muted, #556);
+    font-size:26px;
+    line-height:1;
+    cursor:pointer;
+    transition:background .18s ease, color .18s ease;
+}
+.press-modal__close:hover{
+    background:rgba(47,103,183,.08);
+    color:#2F67B7;
+}
+.press-modal__close:focus-visible{
+    outline:2px solid var(--focus-ring, #2F67B7);
+    outline-offset:2px;
+}
+
+.press-modal__eyebrow{
+    color:#2F67B7;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin:0;
+}
+
+.press-modal__title{
+    margin:10px 0 0;
+    font-size:clamp(1.35rem, 1rem + 1vw, 1.65rem);
+    line-height:1.25;
+    font-weight:800;
+    letter-spacing:-0.01em;
+    color:var(--fg, #16233a);
+}
+
+.press-modal__meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin:14px 0 0;
+    color:var(--fg-muted, #556);
+    font-size:13px;
+}
+.press-modal__meta .card__meta-item{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+}
+.press-modal__meta svg{
+    width:15px;
+    height:15px;
+    color:#2F67B7;
+}
+
+.press-modal__excerpt{
+    margin:18px 0 0;
+    color:var(--fg, #16233a);
+    font-size:15.5px;
+    line-height:1.7;
+}
+
+.press-modal__note{
+    margin:20px 0 0;
+    padding:18px 20px;
+    background:#f3f7fd;
+    border-left:3px solid #2F67B7;
+    border-radius:12px;
+}
+.press-modal__note-label{
+    margin:0 0 6px;
+    color:#2F67B7;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+.press-modal__note-body{
+    margin:0;
+    color:var(--fg, #16233a);
+    font-size:15px;
+    line-height:1.65;
+}
+
+.press-modal__source-note{
+    margin:18px 0 0;
+    color:var(--fg-muted, #556);
+    font-size:12.5px;
+    font-style:italic;
+    line-height:1.55;
+}
+
+@media (max-width:520px){
+    .press-modal__panel{
+        padding:26px 20px;
+    }
+}
