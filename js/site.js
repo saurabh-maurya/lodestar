@@ -664,7 +664,9 @@
       var media = post.image
         ? '<img src="' + escapeHtml(post.image) + '" alt="' + escapeHtml(post.imageAlt || '') + '" decoding="async">'
         : '<span class="feature-post__thumb-icon" aria-hidden="true">' + journalIcon() + '</span>';
-      return '<article class="feature-post" id="' + escapeHtml(post.slug) + '">' +
+      var href = post.link || ('#' + post.slug);
+      var target = post.link ? ' target="_blank" rel="noopener noreferrer"' : '';
+      return '<a class="feature-post" href="' + escapeHtml(href) + '"' + target + ' id="' + escapeHtml(post.slug) + '" aria-label="Read: ' + escapeHtml(post.title) + '">' +
         '<div class="feature-post__media">' + media +
         '<div class="feature-post__overlay">' +
         '<span class="card__tag feature-post__category" aria-hidden="true">' + escapeHtml(post.category) + '</span>' +
@@ -674,14 +676,16 @@
         '<span class="avatar avatar--sm" aria-hidden="true"></span>' +
         '<span class="feature-post__byline"><strong>' + escapeHtml(post.author) + '</strong><span>' + escapeHtml(post.date) + ' \u00b7 ' + escapeHtml(post.readingTime) + '</span></span>' +
         '<span class="feature-post__arrow" aria-hidden="true">' + arrowIcon() + '</span>' +
-        '</div></div></div></article>';
+        '</div></div></div></a>';
     }
 
     function postCardHtml(post) {
       var media = post.image
         ? '<img src="' + escapeHtml(post.image) + '" alt="' + escapeHtml(post.imageAlt || '') + '" loading="lazy" decoding="async">'
         : '<span class="post-card__thumb-icon" aria-hidden="true">' + journalIcon() + '</span>';
-      return '<article class="post-card" id="' + escapeHtml(post.slug) + '">' +
+      var href = post.link || ('#' + post.slug);
+      var target = post.link ? ' target="_blank" rel="noopener noreferrer"' : '';
+      return '<a class="post-card" href="' + escapeHtml(href) + '"' + target + ' id="' + escapeHtml(post.slug) + '" aria-label="Read: ' + escapeHtml(post.title) + '">' +
         '<div class="post-card__thumb">' + media +
         '<span class="card__tag post-card__category" aria-hidden="true">' + escapeHtml(post.category) + '</span>' +
         '<span class="post-card__hover-arrow" aria-hidden="true">' + arrowIcon() + '</span>' +
@@ -691,7 +695,7 @@
         '<span class="post-card__byline"><strong>' + escapeHtml(post.author) + '</strong>' +
         '<span class="post-card__date">' + escapeHtml(post.date) +
         '<span class="post-card__time">' + clockIcon() + escapeHtml(post.readingTime) + '</span></span></span></p>' +
-        '</div></article>';
+        '</div></a>';
     }
 
     function journalIcon() {
